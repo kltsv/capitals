@@ -66,45 +66,58 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
                   progress: max(0, score) / topScore,
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12)
-                        .copyWith(top: 12.0),
-                    child: Headers(
-                      title: 'Is it ${items[current].capital}?',
-                      subtitle: '${items[current].country}',
+              isCompleted
+                  ? Positioned.fill(
+                      child: CompleteWidget(
+                        score: score,
+                        topScore: topScore,
+                        onTap: reset,
+                      ),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation(secondColor)),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: TCard(
-                      slideSpeed: 25,
-                      delaySlideFor: 60,
-                      controller: _cardsController,
-                      cards: items
-                          .map((e) => CapitalCard(key: ValueKey(e), item: e))
-                          .toList(),
-                      onForward: (index, info) => onGuess(
-                        index,
-                        info.direction == SwipDirection.Right,
-                        items[current].fake != null,
+              if (!isCompleted)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12)
+                          .copyWith(top: 12.0),
+                      child: Headers(
+                        title: 'Is it ${items[current].capital}?',
+                        subtitle: '${items[current].country}',
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Controls(
-                      onAnswer: (isTrue) => _cardsController.forward(
-                        direction:
-                            isTrue ? SwipDirection.Right : SwipDirection.Left,
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: TCard(
+                        slideSpeed: 25,
+                        delaySlideFor: 60,
+                        controller: _cardsController,
+                        cards: items
+                            .map((e) => CapitalCard(key: ValueKey(e), item: e))
+                            .toList(),
+                        onForward: (index, info) => onGuess(
+                          index,
+                          info.direction == SwipDirection.Right,
+                          items[current].fake != null,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    Padding(
+                      padding: EdgeInsets.all(12.0),
+                      child: Controls(
+                        onAnswer: (isTrue) => _cardsController.forward(
+                          direction:
+                              isTrue ? SwipDirection.Right : SwipDirection.Left,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
