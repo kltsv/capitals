@@ -21,12 +21,12 @@ class Headers extends StatelessWidget {
     return Column(
       children: [
         if (title != null)
-          Text(
+          FadeSizedText(
             title,
             style: Theme.of(context).textTheme.headline4,
           ),
         if (subtitle != null)
-          Text(
+          FadeSizedText(
             subtitle,
             style: Theme.of(context).textTheme.bodyText2,
           ),
@@ -47,14 +47,14 @@ class Controls extends StatelessWidget {
       children: [
         InkResponse(
           onTap: () => onAnswer?.call(false),
-          child: FadeSizedText(
+          child: Text(
             'False',
             style: Theme.of(context).textTheme.headline5,
           ),
         ),
         InkResponse(
           onTap: () => onAnswer?.call(true),
-          child: FadeSizedText(
+          child: Text(
             'True',
             style: Theme.of(context).textTheme.headline5,
           ),
