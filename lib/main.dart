@@ -6,13 +6,30 @@ import 'package:tcard/tcard.dart';
 import 'components.dart';
 import 'game.dart';
 
-void main() => runApp(const App());
+final _appName = '$countryLimit Capitals';
 
-class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+void main() => runApp(App());
+
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  var _dark = false;
 
   @override
-  Widget build(BuildContext context) => const MaterialApp(home: HomePage());
+  Widget build(BuildContext context) => MaterialApp(
+        title: _appName,
+        builder: (context, child) => ThemeSwitch(
+          isDark: _dark,
+          child: child,
+          onToggle: () => setState(() => _dark = !_dark),
+        ),
+        theme:
+            ThemeData(brightness: _dark ? Brightness.dark : Brightness.light),
+        home: HomePage(),
+      );
 }
 
 class HomePage extends StatefulWidget {

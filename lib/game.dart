@@ -10,7 +10,7 @@ const _successGuess = 3;
 const _successFake = 1;
 const _fail = -1;
 
-const _countryLimit = 30;
+const countryLimit = 30;
 
 final _random = Random();
 
@@ -38,7 +38,7 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       var countries = await Api.fetchCountries();
       countries = _countryWithImages(countries);
       countries.shuffle(_random);
-      countries = countries.sublist(0, _countryLimit);
+      countries = countries.sublist(0, countryLimit);
       _updateItems(countries);
     } catch (e) {
       // TODO handle error
