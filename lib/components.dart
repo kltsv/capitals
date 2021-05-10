@@ -97,3 +97,29 @@ class CapitalCard extends StatelessWidget {
         fit: BoxFit.cover,
       );
 }
+
+
+class GradientBackground extends StatelessWidget {
+  final Color startColor;
+  final Color endColor;
+  final Widget? child;
+
+  const GradientBackground({
+    Key? key,
+    required this.startColor,
+    required this.endColor,
+    this.child,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.bottomLeft,
+        end: Alignment.topRight,
+        colors: [startColor, endColor],
+      ),
+    ),
+    child: child,
+  );
+}
