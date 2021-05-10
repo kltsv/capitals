@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/widgets.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 import 'data.dart';
 import 'models.dart';
@@ -20,11 +21,15 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
 
   final items = <GameItem>[];
 
+  PaletteGenerator? currentPalette;
+  PaletteGenerator? nextPalette;
+
   bool get isCompleted => current == items.length;
 
   Future<void> onInit() async {
     await Assets.load();
     await _onSetupGame();
+    await _onUpdatePalette();
     setState(() {});
   }
 
@@ -41,6 +46,15 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
+  Future<void> _onUpdatePalette() async {
+    currentPalette = currentPalette == null
+        ? await PaletteGenerator.fromImageProvider(items[current].image)
+        : nextPalette;
+    nextPalette = (current + 1) < items.length
+        ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
+        : null;
+  }
+
   void onGuess(int index, bool isTrue, bool isActuallyTrue) async {
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
@@ -55,8 +69,7 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     _updateScore(score + scoreUpdate);
     _updateCurrent(index);
 
-    print('Score: $score/$topScore. Card: $current/${items.length}');
-
+    await _onUpdatePalette();
     setState(() {});
   }
 
