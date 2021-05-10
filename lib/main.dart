@@ -79,44 +79,62 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
                           valueColor: AlwaysStoppedAnimation(secondColor)),
                     ),
               if (!isCompleted)
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12)
-                          .copyWith(top: 12.0),
-                      child: Headers(
-                        title: 'Is it ${items[current].capital}?',
-                        subtitle: '${items[current].country}',
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: TCard(
-                        slideSpeed: 25,
-                        delaySlideFor: 60,
-                        controller: _cardsController,
-                        cards: items
-                            .map((e) => CapitalCard(key: ValueKey(e), item: e))
-                            .toList(),
-                        onForward: (index, info) => onGuess(
-                          index,
-                          info.direction == SwipDirection.Right,
-                          items[current].fake != null,
+                CenterLandscape(
+                  child: LayoutBuilder(
+                    builder: (
+                      BuildContext context,
+                      BoxConstraints constraints,
+                    ) =>
+                        Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12)
+                              .copyWith(top: 12.0),
+                          child: Headers(
+                            title: 'Is it ${items[current].capital}?',
+                            subtitle: '${items[current].country}',
+                          ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Controls(
-                        onAnswer: (isTrue) => _cardsController.forward(
-                          direction:
-                              isTrue ? SwipDirection.Right : SwipDirection.Left,
+                        Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: TCard(
+                            slideSpeed: 25,
+                            delaySlideFor: 60,
+                            size: Size.square(
+                              min(
+                                constraints.biggest.width,
+                                constraints.biggest.height / 2,
+                              ),
+                            ),
+                            controller: _cardsController,
+                            cards: items
+                                .map((e) =>
+                                    CapitalCard(key: ValueKey(e), item: e))
+                                .toList(),
+                            onForward: (index, info) {
+                              onGuess(
+                                index,
+                                info.direction == SwipDirection.Right,
+                                items[current].fake != null,
+                              );
+                            },
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: EdgeInsets.all(12.0),
+                          child: Controls(
+                            onAnswer: (isTrue) => _cardsController.forward(
+                              direction: isTrue
+                                  ? SwipDirection.Right
+                                  : SwipDirection.Left,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
             ],
           ),
