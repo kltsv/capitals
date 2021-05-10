@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 import 'models.dart';
 
@@ -98,7 +100,6 @@ class CapitalCard extends StatelessWidget {
       );
 }
 
-
 class GradientBackground extends StatelessWidget {
   final Color startColor;
   final Color endColor;
@@ -113,13 +114,69 @@ class GradientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        begin: Alignment.bottomLeft,
-        end: Alignment.topRight,
-        colors: [startColor, endColor],
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+            colors: [startColor, endColor],
+          ),
+        ),
+        child: child,
+      );
+}
+
+class Wave extends StatelessWidget {
+  final Color color;
+  final Duration duration;
+
+  const Wave({
+    Key? key,
+    required this.color,
+    this.duration = const Duration(seconds: 10),
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WaveWidget(
+      config: CustomConfig(
+        gradients: [
+          [Colors.transparent, color],
+        ],
+        durations: [duration.inMilliseconds],
+        heightPercentages: [0.0],
+        blur: MaskFilter.blur(BlurStyle.solid, 10),
+        gradientBegin: Alignment.bottomCenter,
+        gradientEnd: Alignment.topCenter,
       ),
-    ),
-    child: child,
-  );
+      waveAmplitude: 0,
+      size: Size(
+        double.infinity,
+        double.infinity,
+      ),
+    );
+  }
+}
+
+class ProgressWave extends StatelessWidget {
+  final double progress;
+  final Color color;
+  final Duration duration;
+
+  const ProgressWave({
+    Key? key,
+    required this.progress,
+    required this.color,
+    this.duration = const Duration(seconds: 10),
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * progress,
+      child: Wave(
+        color: color,
+        duration: duration,
+      ),
+    );
+  }
 }
