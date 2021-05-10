@@ -1,10 +1,8 @@
-import 'package:capitals/models.dart';
 import 'package:flutter/material.dart';
 import 'package:tcard/tcard.dart';
 
 import 'components.dart';
-
-TCardController _cardsController = TCardController();
+import 'game.dart';
 
 void main() => runApp(const App());
 
@@ -15,16 +13,28 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) => const MaterialApp(home: HomePage());
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
+  TCardController _cardsController = TCardController();
+
+  @override
+  void initState() {
+    super.initState();
+    onInit();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final items = [
-      GameItem(Country('Russia', 'Moscow', imageUrls: [
-        'https://images.unsplash.com/photo-1512495039889-52a3b799c9bc'
-      ]))
-    ];
+    if (items.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -34,8 +44,8 @@ class HomePage extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 12).copyWith(top: 12.0),
             child: Headers(
-              title: 'Is it Moscow?',
-              subtitle: 'Russia',
+              title: 'Is it ${items[current].capital}?',
+              subtitle: '${items[current].country}',
             ),
           ),
           Padding(
@@ -47,17 +57,19 @@ class HomePage extends StatelessWidget {
               cards: items
                   .map((e) => CapitalCard(key: ValueKey(e), item: e))
                   .toList(),
-              onForward: (index, info) {
-                print('Swipe: ${info.direction}');
-              },
+              onForward: (index, info) => onGuess(
+                index,
+                info.direction == SwipDirection.Right,
+                items[current].fake != null,
+              ),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(12.0),
             child: Controls(
-              onAnswer: (isTrue) {
-                print('Answer: $isTrue');
-              },
+              onAnswer: (isTrue) => _cardsController.forward(
+                direction: isTrue ? SwipDirection.Right : SwipDirection.Left,
+              ),
             ),
           ),
         ],
