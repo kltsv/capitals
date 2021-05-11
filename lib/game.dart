@@ -30,7 +30,6 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     await Assets.load();
     await _onSetupGame();
     await _onUpdatePalette();
-    setState(() {});
   }
 
   Future<void> _onSetupGame() async {
@@ -47,12 +46,16 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
   }
 
   Future<void> _onUpdatePalette() async {
-    currentPalette = currentPalette == null
+    final crt = currentPalette == null
         ? await PaletteGenerator.fromImageProvider(items[current].image)
         : nextPalette;
-    nextPalette = (current + 1) < items.length
+    final next = (current + 1) < items.length
         ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
         : null;
+    setState(() {
+      currentPalette = crt;
+      nextPalette = next;
+    });
   }
 
   void onGuess(int index, bool isTrue, bool isActuallyTrue) async {
@@ -70,7 +73,6 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     _updateCurrent(index);
 
     await _onUpdatePalette();
-    setState(() {});
   }
 
   void reset() {
@@ -79,14 +81,14 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     _updateTopScore(0);
     final countries = items.map((e) => e.original).toList();
     _updateItems(countries);
-    setState(() {});
   }
 
-  void _updateCurrent(int current) => this.current = current;
+  void _updateCurrent(int current) => setState(() => this.current = current);
 
-  void _updateScore(int score) => this.score = score;
+  void _updateScore(int score) => setState(() => this.score = score);
 
-  void _updateTopScore(int topScore) => this.topScore = topScore;
+  void _updateTopScore(int topScore) =>
+      setState(() => this.topScore = topScore);
 
   void _updateItems(List<Country> countries) {
     final originals = countries.sublist(0, countries.length ~/ 2);
@@ -100,8 +102,10 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    items.clear();
-    items.addAll(list);
+    setState(() {
+      items.clear();
+      items.addAll(list);
+    });
   }
 
   List<Country> _countryWithImages(List<Country> countries) => countries

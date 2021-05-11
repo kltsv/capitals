@@ -311,7 +311,7 @@ class ThemeSwitch extends StatelessWidget {
                 padding: const EdgeInsets.all(12.0),
                 child: IconButton(
                   icon: Icon(
-                    isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
+                    isDark ? Icons.wb_sunny : Icons.nightlight_round,
                   ),
                   onPressed: () => onToggle?.call(),
                 ),
