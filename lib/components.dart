@@ -151,7 +151,7 @@ class Wave extends StatelessWidget {
         ],
         durations: [duration.inMilliseconds],
         heightPercentages: [0.0],
-        blur: MaskFilter.blur(BlurStyle.solid, 10),
+        blur: MaskFilter.blur(BlurStyle.solid, 5),
         gradientBegin: Alignment.bottomCenter,
         gradientEnd: Alignment.topCenter,
       ),
@@ -311,7 +311,7 @@ class ThemeSwitch extends StatelessWidget {
                 padding: const EdgeInsets.all(12.0),
                 child: IconButton(
                   icon: Icon(
-                    isDark ? Icons.wb_sunny : Icons.nightlight_round,
+                    isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
                   ),
                   onPressed: () => onToggle?.call(),
                 ),

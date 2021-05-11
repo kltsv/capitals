@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'data.dart';
@@ -23,6 +23,8 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
 
   PaletteGenerator? currentPalette;
   PaletteGenerator? nextPalette;
+
+  _Colors colors = _Colors(Colors.grey, Colors.grey);
 
   bool get isCompleted => current == items.length;
 
@@ -55,7 +57,18 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     setState(() {
       currentPalette = crt;
       nextPalette = next;
+      colors = _buildColors(crt);
     });
+  }
+
+  _Colors _buildColors(PaletteGenerator? palette) {
+    var mainColor = palette?.mutedColor?.color;
+    var secondColor = palette?.vibrantColor?.color;
+    final defaultColor =
+        mainColor ?? secondColor ?? Theme.of(context).backgroundColor;
+    mainColor = mainColor ?? defaultColor;
+    secondColor = secondColor ?? defaultColor;
+    return _Colors(mainColor, secondColor);
   }
 
   void onGuess(int index, bool isTrue, bool isActuallyTrue) async {
@@ -122,4 +135,11 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       })
       .where((element) => element.index != -1)
       .toList();
+}
+
+class _Colors {
+  final Color main;
+  final Color second;
+
+  const _Colors(this.main, this.second);
 }

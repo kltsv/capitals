@@ -54,24 +54,17 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
       return SizedBox.shrink();
     }
 
-    var mainColor = currentPalette?.mutedColor?.color;
-    var secondColor = currentPalette?.vibrantColor?.color;
-    final defaultColor =
-        mainColor ?? secondColor ?? Theme.of(context).backgroundColor;
-    mainColor = mainColor ?? defaultColor;
-    secondColor = secondColor ?? defaultColor;
-
     return Scaffold(
       body: GradientBackground(
-        startColor: mainColor.withOpacity(0.3),
-        endColor: secondColor.withOpacity(0.3),
+        startColor: colors.main.withOpacity(0.3),
+        endColor: colors.second.withOpacity(0.3),
         child: SafeArea(
           child: Stack(
             children: [
               Align(
                 alignment: Alignment.bottomCenter,
                 child: ProgressWave(
-                  color: secondColor.withOpacity(0.6),
+                  color: colors.second.withOpacity(0.6),
                   progress: current / items.length,
                   duration: Duration(seconds: 15),
                 ),
@@ -79,7 +72,7 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: ProgressWave(
-                  color: mainColor.withOpacity(0.4),
+                  color: colors.main.withOpacity(0.4),
                   progress: max(0, score) / topScore,
                 ),
               ),
@@ -93,7 +86,7 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
                     )
                   : Center(
                       child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(secondColor)),
+                          valueColor: AlwaysStoppedAnimation(colors.second)),
                     ),
               if (!isCompleted)
                 CenterLandscape(
