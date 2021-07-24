@@ -43,9 +43,9 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  List<GameItem> get items => itemsLogic.items;
+  List<GameItem> get items => itemsLogic.state.items;
 
-  int get currentIndex => itemsLogic.currentIndex;
+  int get currentIndex => itemsLogic.state.currentIndex;
 
   bool get isCompleted => itemsLogic.isCompleted;
 

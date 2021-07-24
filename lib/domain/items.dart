@@ -4,36 +4,52 @@ import 'package:flutter/foundation.dart';
 
 import 'models.dart';
 
-class ItemsLogic extends ChangeNotifier {
-  var currentIndex = 0;
+class ItemsState {
+  final int currentIndex;
+  final List<GameItem> items;
 
-  final items = <GameItem>[];
+  const ItemsState(this.currentIndex, this.items);
+
+  ItemsState copyWith({
+    int? currentIndex,
+    List<GameItem>? items,
+  }) =>
+      ItemsState(
+        currentIndex ?? this.currentIndex,
+        items ?? this.items,
+      );
+}
+
+class ItemsLogic extends ChangeNotifier {
+  ItemsState state = ItemsState(0, []);
 
   final Random _random;
 
   ItemsLogic(this._random);
 
-  GameItem get current => items[currentIndex];
+  GameItem get current => state.items[state.currentIndex];
 
-  GameItem? get next =>
-      ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
+  GameItem? get next => ((state.currentIndex + 1) < state.items.length)
+      ? state.items[state.currentIndex + 1]
+      : null;
 
-  bool get isCompleted => currentIndex == items.length;
+  bool get isCompleted => state.currentIndex == state.items.length;
 
-  bool get isCurrentTrue => items[currentIndex].fake == null;
+  bool get isCurrentTrue => current.fake == null;
 
   int get originalsLength =>
-      items.where((element) => element.fake == null).length;
+      state.items.where((element) => element.fake == null).length;
 
-  int get fakeLength => items.length - originalsLength;
+  int get fakeLength => state.items.length - originalsLength;
 
-  double get progress => currentIndex / items.length;
+  double get progress => state.currentIndex / state.items.length;
 
-  void updateCurrent(int current) => _setState(() => currentIndex = current);
+  void updateCurrent(int current) =>
+      _setState(() => state = state.copyWith(currentIndex: current));
 
   void reset() {
     updateCurrent(0);
-    final countries = items.map((e) => e.original).toList();
+    final countries = state.items.map((e) => e.original).toList();
     updateItems(countries);
   }
 
@@ -48,8 +64,7 @@ class ItemsLogic extends ChangeNotifier {
     }
     list.shuffle(_random);
     _setState(() {
-      items.clear();
-      items.addAll(list);
+      state = state.copyWith(items: list);
     });
   }
 
