@@ -6,7 +6,7 @@ import 'package:tcard/tcard.dart';
 
 import 'components.dart';
 import 'data.dart';
-import 'game.dart';
+import 'domain/game.dart';
 
 final _appName = '${GameLogic.countryLimit} Capitals';
 
