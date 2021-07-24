@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/models.dart';
+import 'package:capitals/domain/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:tcard/tcard.dart';
 
@@ -17,7 +19,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TCardController _cardsController = TCardController();
-  final GameLogic game = GameLogic(Random(), const Api());
+  final random = Random();
+  final assets = Assets();
+  final palette = PaletteLogic();
+  late final itemsLogic = ItemsLogic(random);
+  late final game = GameLogic(random, const Api(), assets, palette, itemsLogic);
 
   @override
   void initState() {
@@ -27,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await Assets.load();
+    await assets.load();
     await game.onStartGame();
   }
 
@@ -37,13 +43,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  List<GameItem> get items => game.items;
+  List<GameItem> get items => itemsLogic.items;
 
-  int get current => game.current;
+  int get currentIndex => itemsLogic.currentIndex;
 
-  bool get isCompleted => game.isCompleted;
+  bool get isCompleted => itemsLogic.isCompleted;
 
-  ColorPair get colors => game.colors;
+  ColorPair get colors => palette.colors;
 
   int get score => game.score;
 
@@ -67,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                 alignment: Alignment.bottomCenter,
                 child: ProgressWave(
                   color: colors.second.withOpacity(0.6),
-                  progress: current / items.length,
+                  progress: itemsLogic.progress,
                   duration: Duration(seconds: 15),
                 ),
               ),
@@ -105,8 +111,8 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.symmetric(horizontal: 12)
                               .copyWith(top: 12.0),
                           child: Headers(
-                            title: 'Is it ${items[current].capital}?',
-                            subtitle: '${items[current].country}',
+                            title: 'Is it ${items[currentIndex].capital}?',
+                            subtitle: '${items[currentIndex].country}',
                           ),
                         ),
                         Padding(

@@ -1,10 +1,11 @@
 import 'dart:math';
 
 import 'package:capitals/data/data.dart';
-import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:capitals/domain/items.dart';
+import 'package:flutter/foundation.dart';
 
 import 'models.dart';
+import 'palette.dart';
 
 class GameLogic extends ChangeNotifier {
   static const _successGuess = 3;
@@ -14,21 +15,20 @@ class GameLogic extends ChangeNotifier {
 
   var topScore = 0;
   var score = 0;
-  var current = 0;
-
-  final items = <GameItem>[];
-
-  PaletteGenerator? currentPalette;
-  PaletteGenerator? nextPalette;
-
-  ColorPair colors = ColorPair(Colors.grey, Colors.grey);
 
   final Random _random;
   final Api _api;
+  final Assets _assets;
+  final PaletteLogic _palette;
+  final ItemsLogic _itemsLogic;
 
-  GameLogic(this._random, this._api);
-
-  bool get isCompleted => current == items.length;
+  GameLogic(
+    this._random,
+    this._api,
+    this._assets,
+    this._palette,
+    this._itemsLogic,
+  );
 
   Future<void> onStartGame() async {
     try {
@@ -36,24 +36,22 @@ class GameLogic extends ChangeNotifier {
       countries = _countryWithImages(countries);
       countries.shuffle(_random);
       countries = countries.sublist(0, countryLimit);
-      _updateItems(countries);
+      _prepareItems(countries);
     } catch (e) {
       // TODO handle error
       print(e);
     }
-    await _onUpdatePalette();
+    await _updatePalette();
   }
 
   Future<void> onReset() async {
-    _updateCurrent(0);
     _updateScore(0);
     _updateTopScore(0);
-    final countries = items.map((e) => e.original).toList();
-    _updateItems(countries);
+    _itemsLogic.reset();
   }
 
   Future<void> onGuess(int index, bool isTrue) async {
-    final isActuallyTrue = items[current].fake != null;
+    final isActuallyTrue = _itemsLogic.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -65,63 +63,31 @@ class GameLogic extends ChangeNotifier {
       scoreUpdate = _fail;
     }
     _updateScore(score + scoreUpdate);
-    _updateCurrent(index);
+    _itemsLogic.updateCurrent(index);
 
-    await _onUpdatePalette();
+    await _updatePalette();
   }
 
-  Future<void> _onUpdatePalette() async {
-    final crt = currentPalette == null
-        ? await PaletteGenerator.fromImageProvider(items[current].image)
-        : nextPalette;
-    final next = (current + 1) < items.length
-        ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
-        : null;
-    _setState(() {
-      currentPalette = crt;
-      nextPalette = next;
-      colors = _buildColors(crt);
-    });
-  }
-
-  ColorPair _buildColors(PaletteGenerator? palette) {
-    var mainColor = palette?.mutedColor?.color;
-    var secondColor = palette?.vibrantColor?.color;
-    final defaultColor = mainColor ?? secondColor ?? Colors.grey;
-    mainColor = mainColor ?? defaultColor;
-    secondColor = secondColor ?? defaultColor;
-    return ColorPair(mainColor, secondColor);
-  }
-
-  void _updateCurrent(int current) => _setState(() => this.current = current);
+  Future<void> _updatePalette() => _palette.updatePalette(
+      _itemsLogic.current.image, _itemsLogic.next?.image);
 
   void _updateScore(int score) => _setState(() => this.score = score);
 
   void _updateTopScore(int topScore) =>
       _setState(() => this.topScore = topScore);
 
-  void _updateItems(List<Country> countries) {
-    final originals = countries.sublist(0, countries.length ~/ 2);
-    _updateTopScore(topScore + originals.length * _successGuess);
-    final fakes = countries.sublist(countries.length ~/ 2, countries.length);
-    _updateTopScore(topScore + fakes.length * _successFake);
-    fakes.shuffle(_random);
-    final list = <GameItem>[];
-    list.addAll(originals.map((e) => GameItem(e)));
-    for (var i = 0; i < fakes.length; i++) {
-      list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
-    }
-    list.shuffle(_random);
-    _setState(() {
-      items.clear();
-      items.addAll(list);
-    });
+  void _prepareItems(List<Country> countries) {
+    _itemsLogic.updateItems(countries);
+    final originals = _itemsLogic.originalsLength;
+    final fakes = _itemsLogic.fakeLength;
+    _updateTopScore(topScore + originals * _successGuess);
+    _updateTopScore(topScore + fakes * _successFake);
   }
 
   List<Country> _countryWithImages(List<Country> countries) => countries
       .where((element) => element.capital.isNotEmpty)
       .map((e) {
-        final imageUrls = Assets.capitalPictures(e.capital);
+        final imageUrls = _assets.capitalPictures(e.capital);
         if (imageUrls.isNotEmpty) {
           final randomIndex = _random.nextInt(imageUrls.length);
           return Country(e.name, e.capital,
