@@ -1,20 +1,17 @@
 import 'dart:math';
 
+import 'package:capitals/data.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-import 'data.dart';
 import 'models.dart';
 
-const _successGuess = 3;
-const _successFake = 1;
-const _fail = -1;
+class GameLogic extends ChangeNotifier {
+  static const _successGuess = 3;
+  static const _successFake = 1;
+  static const _fail = -1;
+  static const countryLimit = 30;
 
-const countryLimit = 30;
-
-final _random = Random();
-
-mixin GameMixin<T extends StatefulWidget> on State<T> {
   var topScore = 0;
   var score = 0;
   var current = 0;
@@ -24,19 +21,18 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
   PaletteGenerator? currentPalette;
   PaletteGenerator? nextPalette;
 
-  _Colors colors = _Colors(Colors.grey, Colors.grey);
+  ColorPair colors = ColorPair(Colors.grey, Colors.grey);
+
+  final Random _random;
+  final Api _api;
+
+  GameLogic(this._random, this._api);
 
   bool get isCompleted => current == items.length;
 
-  Future<void> onInit() async {
-    await Assets.load();
-    await _onSetupGame();
-    await _onUpdatePalette();
-  }
-
-  Future<void> _onSetupGame() async {
+  Future<void> onStartGame() async {
     try {
-      var countries = await Api.fetchCountries();
+      var countries = await _api.fetchCountries();
       countries = _countryWithImages(countries);
       countries.shuffle(_random);
       countries = countries.sublist(0, countryLimit);
@@ -45,33 +41,19 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       // TODO handle error
       print(e);
     }
+    await _onUpdatePalette();
   }
 
-  Future<void> _onUpdatePalette() async {
-    final crt = currentPalette == null
-        ? await PaletteGenerator.fromImageProvider(items[current].image)
-        : nextPalette;
-    final next = (current + 1) < items.length
-        ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
-        : null;
-    setState(() {
-      currentPalette = crt;
-      nextPalette = next;
-      colors = _buildColors(crt);
-    });
+  Future<void> onReset() async {
+    _updateCurrent(0);
+    _updateScore(0);
+    _updateTopScore(0);
+    final countries = items.map((e) => e.original).toList();
+    _updateItems(countries);
   }
 
-  _Colors _buildColors(PaletteGenerator? palette) {
-    var mainColor = palette?.mutedColor?.color;
-    var secondColor = palette?.vibrantColor?.color;
-    final defaultColor =
-        mainColor ?? secondColor ?? Theme.of(context).backgroundColor;
-    mainColor = mainColor ?? defaultColor;
-    secondColor = secondColor ?? defaultColor;
-    return _Colors(mainColor, secondColor);
-  }
-
-  void onGuess(int index, bool isTrue, bool isActuallyTrue) async {
+  Future<void> onGuess(int index, bool isTrue) async {
+    final isActuallyTrue = items[current].fake != null;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -88,20 +70,35 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
     await _onUpdatePalette();
   }
 
-  void reset() {
-    _updateCurrent(0);
-    _updateScore(0);
-    _updateTopScore(0);
-    final countries = items.map((e) => e.original).toList();
-    _updateItems(countries);
+  Future<void> _onUpdatePalette() async {
+    final crt = currentPalette == null
+        ? await PaletteGenerator.fromImageProvider(items[current].image)
+        : nextPalette;
+    final next = (current + 1) < items.length
+        ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
+        : null;
+    _setState(() {
+      currentPalette = crt;
+      nextPalette = next;
+      colors = _buildColors(crt);
+    });
   }
 
-  void _updateCurrent(int current) => setState(() => this.current = current);
+  ColorPair _buildColors(PaletteGenerator? palette) {
+    var mainColor = palette?.mutedColor?.color;
+    var secondColor = palette?.vibrantColor?.color;
+    final defaultColor = mainColor ?? secondColor ?? Colors.grey;
+    mainColor = mainColor ?? defaultColor;
+    secondColor = secondColor ?? defaultColor;
+    return ColorPair(mainColor, secondColor);
+  }
 
-  void _updateScore(int score) => setState(() => this.score = score);
+  void _updateCurrent(int current) => _setState(() => this.current = current);
+
+  void _updateScore(int score) => _setState(() => this.score = score);
 
   void _updateTopScore(int topScore) =>
-      setState(() => this.topScore = topScore);
+      _setState(() => this.topScore = topScore);
 
   void _updateItems(List<Country> countries) {
     final originals = countries.sublist(0, countries.length ~/ 2);
@@ -115,7 +112,7 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    setState(() {
+    _setState(() {
       items.clear();
       items.addAll(list);
     });
@@ -135,11 +132,16 @@ mixin GameMixin<T extends StatefulWidget> on State<T> {
       })
       .where((element) => element.index != -1)
       .toList();
+
+  void _setState(VoidCallback callback) {
+    callback();
+    notifyListeners();
+  }
 }
 
-class _Colors {
+class ColorPair {
   final Color main;
   final Color second;
 
-  const _Colors(this.main, this.second);
+  const ColorPair(this.main, this.second);
 }

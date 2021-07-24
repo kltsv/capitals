@@ -1,12 +1,14 @@
 import 'dart:math';
 
+import 'package:capitals/models.dart';
 import 'package:flutter/material.dart';
 import 'package:tcard/tcard.dart';
 
 import 'components.dart';
+import 'data.dart';
 import 'game.dart';
 
-final _appName = '$countryLimit Capitals';
+final _appName = '${GameLogic.countryLimit} Capitals';
 
 void main() => runApp(App());
 
@@ -39,14 +41,39 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
+class _HomePageState extends State<HomePage> {
   TCardController _cardsController = TCardController();
+  final GameLogic game = GameLogic(Random(), const Api());
 
   @override
   void initState() {
     super.initState();
+    game.addListener(_update);
     onInit();
   }
+
+  Future<void> onInit() async {
+    await Assets.load();
+    await game.onStartGame();
+  }
+
+  @override
+  void dispose() {
+    game.removeListener(_update);
+    super.dispose();
+  }
+
+  List<GameItem> get items => game.items;
+
+  int get current => game.current;
+
+  bool get isCompleted => game.isCompleted;
+
+  ColorPair get colors => game.colors;
+
+  int get score => game.score;
+
+  int get topScore => game.topScore;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +109,7 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
                       child: CompleteWidget(
                         score: score,
                         topScore: topScore,
-                        onTap: reset,
+                        onTap: () => game.onReset(),
                       ),
                     )
                   : Center(
@@ -125,10 +152,9 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
                                     CapitalCard(key: ValueKey(e), item: e))
                                 .toList(),
                             onForward: (index, info) {
-                              onGuess(
+                              game.onGuess(
                                 index,
                                 info.direction == SwipDirection.Right,
-                                items[current].fake != null,
                               );
                             },
                           ),
@@ -153,4 +179,6 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
       ),
     );
   }
+
+  void _update() => setState(() {});
 }
