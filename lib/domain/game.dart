@@ -18,12 +18,14 @@ class GameLogic extends ChangeNotifier {
 
   final Random _random;
   final Api _api;
+  final Assets _assets;
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
 
   GameLogic(
     this._random,
     this._api,
+    this._assets,
     this._palette,
     this._itemsLogic,
   );
@@ -85,7 +87,7 @@ class GameLogic extends ChangeNotifier {
   List<Country> _countryWithImages(List<Country> countries) => countries
       .where((element) => element.capital.isNotEmpty)
       .map((e) {
-        final imageUrls = Assets.capitalPictures(e.capital);
+        final imageUrls = _assets.capitalPictures(e.capital);
         if (imageUrls.isNotEmpty) {
           final randomIndex = _random.nextInt(imageUrls.length);
           return Country(e.name, e.capital,

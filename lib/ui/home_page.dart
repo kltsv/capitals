@@ -19,11 +19,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TCardController _cardsController = TCardController();
-  final Random random = Random();
-  final PaletteLogic palette = PaletteLogic();
-  late final ItemsLogic itemsLogic = ItemsLogic(random);
-  late final GameLogic game =
-      GameLogic(random, const Api(), palette, itemsLogic);
+  final random = Random();
+  final assets = Assets();
+  final palette = PaletteLogic();
+  late final itemsLogic = ItemsLogic(random);
+  late final game = GameLogic(random, const Api(), assets, palette, itemsLogic);
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await Assets.load();
+    await assets.load();
     await game.onStartGame();
   }
 
