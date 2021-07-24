@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 class Country {
   final String name;
@@ -27,4 +27,11 @@ class GameItem {
   String get capital => fake?.capital ?? original.capital;
 
   ImageProvider get image => original.image;
+}
+
+class ColorPair {
+  final Color main;
+  final Color second;
+
+  const ColorPair(this.main, this.second);
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
-import 'models.dart';
+import '../domain/models.dart';
 
 class Headers extends StatelessWidget {
   final String? title;
