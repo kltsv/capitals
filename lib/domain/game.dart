@@ -7,14 +7,29 @@ import 'package:flutter/foundation.dart';
 import 'models.dart';
 import 'palette.dart';
 
+class GameState {
+  final int score;
+  final int topScore;
+
+  const GameState(this.score, this.topScore);
+
+  GameState copyWith({
+    int? score,
+    int? topScore,
+  }) =>
+      GameState(
+        score ?? this.score,
+        topScore ?? this.topScore,
+      );
+}
+
 class GameLogic extends ChangeNotifier {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
   static const countryLimit = 30;
 
-  var topScore = 0;
-  var score = 0;
+  GameState state = GameState(0, 0);
 
   final Random _random;
   final Api _api;
@@ -62,7 +77,7 @@ class GameLogic extends ChangeNotifier {
     if (isTrue && !isActuallyTrue || !isTrue && isActuallyTrue) {
       scoreUpdate = _fail;
     }
-    _updateScore(score + scoreUpdate);
+    _updateScore(state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
     await _updatePalette();
@@ -71,17 +86,18 @@ class GameLogic extends ChangeNotifier {
   Future<void> _updatePalette() => _palette.updatePalette(
       _itemsLogic.current.image, _itemsLogic.next?.image);
 
-  void _updateScore(int score) => _setState(() => this.score = score);
+  void _updateScore(int score) =>
+      _setState(() => state = state.copyWith(score: score));
 
   void _updateTopScore(int topScore) =>
-      _setState(() => this.topScore = topScore);
+      _setState(() => state = state.copyWith(topScore: topScore));
 
   void _prepareItems(List<Country> countries) {
     _itemsLogic.updateItems(countries);
     final originals = _itemsLogic.originalsLength;
     final fakes = _itemsLogic.fakeLength;
-    _updateTopScore(topScore + originals * _successGuess);
-    _updateTopScore(topScore + fakes * _successFake);
+    final topScore = originals * _successGuess + fakes * _successFake;
+    _updateTopScore(topScore);
   }
 
   List<Country> _countryWithImages(List<Country> countries) => countries

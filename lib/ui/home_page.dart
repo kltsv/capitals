@@ -51,9 +51,9 @@ class _HomePageState extends State<HomePage> {
 
   ColorPair get colors => palette.colors;
 
-  int get score => game.score;
+  int get score => game.state.score;
 
-  int get topScore => game.topScore;
+  int get topScore => game.state.topScore;
 
   @override
   Widget build(BuildContext context) {
