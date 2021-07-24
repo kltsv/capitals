@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:capitals/data.dart';
+import 'package:capitals/data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 
@@ -137,11 +137,4 @@ class GameLogic extends ChangeNotifier {
     callback();
     notifyListeners();
   }
-}
-
-class ColorPair {
-  final Color main;
-  final Color second;
-
-  const ColorPair(this.main, this.second);
 }
