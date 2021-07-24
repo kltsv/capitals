@@ -28,7 +28,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    game.addListener(_update);
     onInit();
   }
 
@@ -39,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    game.removeListener(_update);
+    game.dispose();
     super.dispose();
   }
 
@@ -50,10 +49,6 @@ class _HomePageState extends State<HomePage> {
   bool get isCompleted => itemsLogic.isCompleted;
 
   ColorPair get colors => palette.colors;
-
-  int get score => game.state.score;
-
-  int get topScore => game.state.topScore;
 
   @override
   Widget build(BuildContext context) {
@@ -77,18 +72,24 @@ class _HomePageState extends State<HomePage> {
                   duration: Duration(seconds: 15),
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: ProgressWave(
-                  color: colors.main.withOpacity(0.4),
-                  progress: max(0, score) / topScore,
-                ),
-              ),
+              StreamBuilder<GameState>(
+                  initialData: game.state,
+                  stream: game.stream,
+                  builder: (context, snapshot) {
+                    final progress = snapshot.requireData.progress;
+                    return Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ProgressWave(
+                        color: colors.main.withOpacity(0.4),
+                        progress: progress,
+                      ),
+                    );
+                  }),
               isCompleted
                   ? Positioned.fill(
                       child: CompleteWidget(
-                        score: score,
-                        topScore: topScore,
+                        score: game.state.score,
+                        topScore: game.state.topScore,
                         onTap: () => game.onReset(),
                       ),
                     )

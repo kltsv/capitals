@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
-import 'package:flutter/foundation.dart';
 
 import 'models.dart';
 import 'palette.dart';
@@ -12,6 +12,8 @@ class GameState {
   final int topScore;
 
   const GameState(this.score, this.topScore);
+
+  double get progress => max(0, score) / topScore;
 
   GameState copyWith({
     int? score,
@@ -23,7 +25,7 @@ class GameState {
       );
 }
 
-class GameLogic extends ChangeNotifier {
+class GameLogic {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
@@ -35,7 +37,8 @@ class GameLogic extends ChangeNotifier {
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
 
-  var state = GameState(0, 1);
+  final _controller = StreamController<GameState>.broadcast();
+  var _state = GameState(0, 1);
 
   GameLogic(
     this._random,
@@ -44,6 +47,12 @@ class GameLogic extends ChangeNotifier {
     this._palette,
     this._itemsLogic,
   );
+
+  GameState get state => _state;
+
+  Stream<GameState> get stream => _controller.stream;
+
+  Future<void> dispose() => _controller.close();
 
   Future<void> onStartGame() async {
     try {
@@ -88,11 +97,10 @@ class GameLogic extends ChangeNotifier {
   Future<void> _updatePalette() => _palette.updatePalette(
       _itemsLogic.current.image, _itemsLogic.next?.image);
 
-  void _updateScore(int score) =>
-      _setState(() => state = state.copyWith(score: score));
+  void _updateScore(int score) => _setState(state.copyWith(score: score));
 
   void _updateTopScore(int topScore) =>
-      _setState(() => state = state.copyWith(topScore: topScore));
+      _setState(state.copyWith(topScore: topScore));
 
   void _prepareItems(List<Country> countries) {
     _itemsLogic.updateItems(countries);
@@ -117,8 +125,8 @@ class GameLogic extends ChangeNotifier {
       .where((element) => element.index != -1)
       .toList();
 
-  void _setState(VoidCallback callback) {
-    callback();
-    notifyListeners();
+  void _setState(GameState state) {
+    _state = state;
+    _controller.add(_state);
   }
 }
