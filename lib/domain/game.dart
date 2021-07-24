@@ -75,7 +75,7 @@ class GameLogic {
   }
 
   Future<void> onGuess(int index, bool isTrue) async {
-    final isActuallyTrue = _itemsLogic.isCurrentTrue;
+    final isActuallyTrue = _itemsLogic.state.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -89,13 +89,13 @@ class GameLogic {
     _updateScore(state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
-    if (!_itemsLogic.isCompleted) {
+    if (!_itemsLogic.state.isCompleted) {
       await _updatePalette();
     }
   }
 
   Future<void> _updatePalette() => _palette.updatePalette(
-      _itemsLogic.current.image, _itemsLogic.next?.image);
+      _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
 
   void _updateScore(int score) => _setState(state.copyWith(score: score));
 
@@ -104,8 +104,8 @@ class GameLogic {
 
   void _prepareItems(List<Country> countries) {
     _itemsLogic.updateItems(countries);
-    final originals = _itemsLogic.originalsLength;
-    final fakes = _itemsLogic.fakeLength;
+    final originals = _itemsLogic.state.originalsLength;
+    final fakes = _itemsLogic.state.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;
     _updateTopScore(topScore);
   }

@@ -1,14 +1,33 @@
+import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 
 import 'models.dart';
 
 class ItemsState {
+  static const empty = ItemsState(0, []);
+
   final int currentIndex;
   final List<GameItem> items;
 
   const ItemsState(this.currentIndex, this.items);
+
+  GameItem get current => items[currentIndex];
+
+  GameItem? get next =>
+      ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
+
+  bool get isCompleted => items.isNotEmpty  && currentIndex == items.length;
+
+  bool get isEmpty => items.isEmpty;
+
+  bool get isCurrentTrue => current.fake == null;
+
+  int get originalsLength =>
+      items.where((element) => element.fake == null).length;
+
+  int get fakeLength => items.length - originalsLength;
+
+  double get progress => isEmpty ? 0 : currentIndex / items.length;
 
   ItemsState copyWith({
     int? currentIndex,
@@ -20,32 +39,22 @@ class ItemsState {
       );
 }
 
-class ItemsLogic extends ChangeNotifier {
+class ItemsLogic {
   final Random _random;
 
-  var state = ItemsState(0, []);
+  final _controller = StreamController<ItemsState>.broadcast();
+  var _state = ItemsState.empty;
 
   ItemsLogic(this._random);
 
-  GameItem get current => state.items[state.currentIndex];
+  ItemsState get state => _state;
 
-  GameItem? get next => ((state.currentIndex + 1) < state.items.length)
-      ? state.items[state.currentIndex + 1]
-      : null;
+  Stream<ItemsState> get stream => _controller.stream;
 
-  bool get isCompleted => state.currentIndex == state.items.length;
-
-  bool get isCurrentTrue => current.fake == null;
-
-  int get originalsLength =>
-      state.items.where((element) => element.fake == null).length;
-
-  int get fakeLength => state.items.length - originalsLength;
-
-  double get progress => state.currentIndex / state.items.length;
+  Future<void> dispose() => _controller.close();
 
   void updateCurrent(int current) =>
-      _setState(() => state = state.copyWith(currentIndex: current));
+      _setState(state.copyWith(currentIndex: current));
 
   void reset() {
     updateCurrent(0);
@@ -63,11 +72,11 @@ class ItemsLogic extends ChangeNotifier {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    _setState(() => state = state.copyWith(items: list));
+    _setState(state.copyWith(items: list));
   }
 
-  void _setState(VoidCallback callback) {
-    callback();
-    notifyListeners();
+  void _setState(ItemsState state) {
+    _state = state;
+    _controller.add(_state);
   }
 }
