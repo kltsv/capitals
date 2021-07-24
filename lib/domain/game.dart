@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:capitals/data/data.dart';
-import 'package:flutter/material.dart';
-import 'package:palette_generator/palette_generator.dart';
+import 'package:flutter/foundation.dart';
 
 import 'models.dart';
+import 'palette.dart';
 
 class GameLogic extends ChangeNotifier {
   static const _successGuess = 3;
@@ -18,15 +18,15 @@ class GameLogic extends ChangeNotifier {
 
   final items = <GameItem>[];
 
-  PaletteGenerator? currentPalette;
-  PaletteGenerator? nextPalette;
-
-  ColorPair colors = ColorPair(Colors.grey, Colors.grey);
-
   final Random _random;
   final Api _api;
+  final PaletteLogic _palette;
 
-  GameLogic(this._random, this._api);
+  GameLogic(
+    this._random,
+    this._api,
+    this._palette,
+  );
 
   bool get isCompleted => current == items.length;
 
@@ -41,7 +41,7 @@ class GameLogic extends ChangeNotifier {
       // TODO handle error
       print(e);
     }
-    await _onUpdatePalette();
+    await _updatePalette();
   }
 
   Future<void> onReset() async {
@@ -67,31 +67,11 @@ class GameLogic extends ChangeNotifier {
     _updateScore(score + scoreUpdate);
     _updateCurrent(index);
 
-    await _onUpdatePalette();
+    await _updatePalette();
   }
 
-  Future<void> _onUpdatePalette() async {
-    final crt = currentPalette == null
-        ? await PaletteGenerator.fromImageProvider(items[current].image)
-        : nextPalette;
-    final next = (current + 1) < items.length
-        ? await PaletteGenerator.fromImageProvider(items[current + 1].image)
-        : null;
-    _setState(() {
-      currentPalette = crt;
-      nextPalette = next;
-      colors = _buildColors(crt);
-    });
-  }
-
-  ColorPair _buildColors(PaletteGenerator? palette) {
-    var mainColor = palette?.mutedColor?.color;
-    var secondColor = palette?.vibrantColor?.color;
-    final defaultColor = mainColor ?? secondColor ?? Colors.grey;
-    mainColor = mainColor ?? defaultColor;
-    secondColor = secondColor ?? defaultColor;
-    return ColorPair(mainColor, secondColor);
-  }
+  Future<void> _updatePalette() => _palette.updatePalette(items[current].image,
+      (current + 1) < items.length ? items[current + 1].image : null);
 
   void _updateCurrent(int current) => _setState(() => this.current = current);
 

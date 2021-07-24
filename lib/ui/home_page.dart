@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:capitals/domain/models.dart';
+import 'package:capitals/domain/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:tcard/tcard.dart';
 
@@ -17,11 +18,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TCardController _cardsController = TCardController();
-  final GameLogic game = GameLogic(Random(), const Api());
+  final PaletteLogic palette = PaletteLogic();
+  late final GameLogic game;
 
   @override
   void initState() {
     super.initState();
+    _initDependencies();
+
     game.addListener(_update);
     onInit();
   }
@@ -29,6 +33,10 @@ class _HomePageState extends State<HomePage> {
   Future<void> onInit() async {
     await Assets.load();
     await game.onStartGame();
+  }
+
+  void _initDependencies() {
+    game = GameLogic(Random(), const Api(), palette);
   }
 
   @override
@@ -43,7 +51,7 @@ class _HomePageState extends State<HomePage> {
 
   bool get isCompleted => game.isCompleted;
 
-  ColorPair get colors => game.colors;
+  ColorPair get colors => palette.colors;
 
   int get score => game.score;
 
