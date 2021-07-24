@@ -29,7 +29,7 @@ class GameLogic extends ChangeNotifier {
   static const _fail = -1;
   static const countryLimit = 30;
 
-  GameState state = GameState(0, 0);
+  GameState state = GameState(0, 1);
 
   final Random _random;
   final Api _api;
@@ -61,7 +61,7 @@ class GameLogic extends ChangeNotifier {
 
   Future<void> onReset() async {
     _updateScore(0);
-    _updateTopScore(0);
+    _updateTopScore(1);
     _itemsLogic.reset();
   }
 
@@ -80,7 +80,9 @@ class GameLogic extends ChangeNotifier {
     _updateScore(state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
-    await _updatePalette();
+    if (!_itemsLogic.isCompleted) {
+      await _updatePalette();
+    }
   }
 
   Future<void> _updatePalette() => _palette.updatePalette(
