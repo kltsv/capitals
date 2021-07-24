@@ -21,9 +21,9 @@ class ItemsState {
 }
 
 class ItemsLogic extends ChangeNotifier {
-  ItemsState state = ItemsState(0, []);
-
   final Random _random;
+
+  var state = ItemsState(0, []);
 
   ItemsLogic(this._random);
 
@@ -63,9 +63,7 @@ class ItemsLogic extends ChangeNotifier {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    _setState(() {
-      state = state.copyWith(items: list);
-    });
+    _setState(() => state = state.copyWith(items: list));
   }
 
   void _setState(VoidCallback callback) {

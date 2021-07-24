@@ -29,13 +29,13 @@ class GameLogic extends ChangeNotifier {
   static const _fail = -1;
   static const countryLimit = 30;
 
-  GameState state = GameState(0, 1);
-
   final Random _random;
   final Api _api;
   final Assets _assets;
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
+
+  var state = GameState(0, 1);
 
   GameLogic(
     this._random,
