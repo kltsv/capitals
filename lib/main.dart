@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> with GameMixin<HomePage> {
         startColor: colors.main.withOpacity(0.3),
         endColor: colors.second.withOpacity(0.3),
         child: SafeArea(
+          bottom: false,
           child: Stack(
             children: [
               Align(
