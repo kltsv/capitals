@@ -1,6 +1,7 @@
 import 'package:capitals/domain/assemble.dart';
 import 'package:capitals/domain/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'components.dart';
@@ -19,7 +20,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          Provider.value(value: assemble.game),
+          BlocProvider.value(value: assemble.game),
           Provider.value(value: assemble.assets),
           StreamProvider.value(
             value: assemble.itemsLogic.stream,
