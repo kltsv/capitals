@@ -72,6 +72,7 @@ class GameLogic {
     _updateScore(0);
     _updateTopScore(1);
     _itemsLogic.reset();
+    _prepareItems(_itemsLogic.state.items.map((e) => e.original).toList());
   }
 
   Future<void> onGuess(int index, bool isTrue) async {
