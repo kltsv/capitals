@@ -14,6 +14,8 @@ dependencies:
   palette_generator: ^0.3.0
   wave: ^0.2.0
 
+  get_it: ^7.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
