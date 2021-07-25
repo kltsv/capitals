@@ -1,39 +1,64 @@
+import 'dart:async';
 import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 
 import 'models.dart';
 
-class ItemsLogic extends ChangeNotifier {
-  var currentIndex = 0;
+class ItemsState {
+  static const empty = ItemsState(0, []);
 
-  final items = <GameItem>[];
+  final int currentIndex;
+  final List<GameItem> items;
 
-  final Random _random;
-
-  ItemsLogic(this._random);
+  const ItemsState(this.currentIndex, this.items);
 
   GameItem get current => items[currentIndex];
 
   GameItem? get next =>
       ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
 
-  bool get isCompleted => currentIndex == items.length;
+  bool get isCompleted => items.isNotEmpty  && currentIndex == items.length;
 
-  bool get isCurrentTrue => items[currentIndex].fake == null;
+  bool get isEmpty => items.isEmpty;
+
+  bool get isCurrentTrue => current.fake == null;
 
   int get originalsLength =>
       items.where((element) => element.fake == null).length;
 
   int get fakeLength => items.length - originalsLength;
 
-  double get progress => currentIndex / items.length;
+  double get progress => isEmpty ? 0 : currentIndex / items.length;
 
-  void updateCurrent(int current) => _setState(() => currentIndex = current);
+  ItemsState copyWith({
+    int? currentIndex,
+    List<GameItem>? items,
+  }) =>
+      ItemsState(
+        currentIndex ?? this.currentIndex,
+        items ?? this.items,
+      );
+}
+
+class ItemsLogic {
+  final Random _random;
+
+  final _controller = StreamController<ItemsState>.broadcast();
+  var _state = ItemsState.empty;
+
+  ItemsLogic(this._random);
+
+  ItemsState get state => _state;
+
+  Stream<ItemsState> get stream => _controller.stream;
+
+  Future<void> dispose() => _controller.close();
+
+  void updateCurrent(int current) =>
+      _setState(state.copyWith(currentIndex: current));
 
   void reset() {
     updateCurrent(0);
-    final countries = items.map((e) => e.original).toList();
+    final countries = state.items.map((e) => e.original).toList();
     updateItems(countries);
   }
 
@@ -47,14 +72,11 @@ class ItemsLogic extends ChangeNotifier {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    _setState(() {
-      items.clear();
-      items.addAll(list);
-    });
+    _setState(state.copyWith(items: list));
   }
 
-  void _setState(VoidCallback callback) {
-    callback();
-    notifyListeners();
+  void _setState(ItemsState state) {
+    _state = state;
+    _controller.add(_state);
   }
 }

@@ -1,26 +1,44 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
-import 'package:flutter/foundation.dart';
 
 import 'models.dart';
 import 'palette.dart';
 
-class GameLogic extends ChangeNotifier {
+class GameState {
+  final int score;
+  final int topScore;
+
+  const GameState(this.score, this.topScore);
+
+  double get progress => max(0, score) / topScore;
+
+  GameState copyWith({
+    int? score,
+    int? topScore,
+  }) =>
+      GameState(
+        score ?? this.score,
+        topScore ?? this.topScore,
+      );
+}
+
+class GameLogic {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
   static const countryLimit = 30;
-
-  var topScore = 0;
-  var score = 0;
 
   final Random _random;
   final Api _api;
   final Assets _assets;
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
+
+  final _controller = StreamController<GameState>.broadcast();
+  var _state = GameState(0, 1);
 
   GameLogic(
     this._random,
@@ -29,6 +47,12 @@ class GameLogic extends ChangeNotifier {
     this._palette,
     this._itemsLogic,
   );
+
+  GameState get state => _state;
+
+  Stream<GameState> get stream => _controller.stream;
+
+  Future<void> dispose() => _controller.close();
 
   Future<void> onStartGame() async {
     try {
@@ -46,12 +70,12 @@ class GameLogic extends ChangeNotifier {
 
   Future<void> onReset() async {
     _updateScore(0);
-    _updateTopScore(0);
+    _updateTopScore(1);
     _itemsLogic.reset();
   }
 
   Future<void> onGuess(int index, bool isTrue) async {
-    final isActuallyTrue = _itemsLogic.isCurrentTrue;
+    final isActuallyTrue = _itemsLogic.state.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -62,26 +86,28 @@ class GameLogic extends ChangeNotifier {
     if (isTrue && !isActuallyTrue || !isTrue && isActuallyTrue) {
       scoreUpdate = _fail;
     }
-    _updateScore(score + scoreUpdate);
+    _updateScore(state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
-    await _updatePalette();
+    if (!_itemsLogic.state.isCompleted) {
+      await _updatePalette();
+    }
   }
 
   Future<void> _updatePalette() => _palette.updatePalette(
-      _itemsLogic.current.image, _itemsLogic.next?.image);
+      _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
 
-  void _updateScore(int score) => _setState(() => this.score = score);
+  void _updateScore(int score) => _setState(state.copyWith(score: score));
 
   void _updateTopScore(int topScore) =>
-      _setState(() => this.topScore = topScore);
+      _setState(state.copyWith(topScore: topScore));
 
   void _prepareItems(List<Country> countries) {
     _itemsLogic.updateItems(countries);
-    final originals = _itemsLogic.originalsLength;
-    final fakes = _itemsLogic.fakeLength;
-    _updateTopScore(topScore + originals * _successGuess);
-    _updateTopScore(topScore + fakes * _successFake);
+    final originals = _itemsLogic.state.originalsLength;
+    final fakes = _itemsLogic.state.fakeLength;
+    final topScore = originals * _successGuess + fakes * _successFake;
+    _updateTopScore(topScore);
   }
 
   List<Country> _countryWithImages(List<Country> countries) => countries
@@ -99,8 +125,8 @@ class GameLogic extends ChangeNotifier {
       .where((element) => element.index != -1)
       .toList();
 
-  void _setState(VoidCallback callback) {
-    callback();
-    notifyListeners();
+  void _setState(GameState state) {
+    _state = state;
+    _controller.add(_state);
   }
 }
