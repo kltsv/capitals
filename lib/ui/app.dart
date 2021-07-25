@@ -19,6 +19,8 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
+          Provider.value(value: assemble.game),
+          Provider.value(value: assemble.assets),
           StreamProvider.value(
             value: assemble.itemsLogic.stream,
             initialData: assemble.itemsLogic.state,

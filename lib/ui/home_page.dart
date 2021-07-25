@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:capitals/domain/assemble.dart';
+import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
 import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/models.dart';
@@ -27,14 +27,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await assemble.assets.load();
-    await assemble.game.onStartGame();
-  }
-
-  @override
-  void dispose() {
-    assemble.game.dispose();
-    super.dispose();
+    await context.read<Assets>().load();
+    await context.read<GameLogic>().onStartGame();
   }
 
   @override
@@ -140,10 +134,10 @@ class _Cards extends StatelessWidget {
           cards:
               items.map((e) => CapitalCard(key: ValueKey(e), item: e)).toList(),
           onForward: (index, info) {
-            assemble.game.onGuess(
-              index,
-              info.direction == SwipDirection.Right,
-            );
+            context.read<GameLogic>().onGuess(
+                  index,
+                  info.direction == SwipDirection.Right,
+                );
           },
         );
       },
@@ -177,19 +171,24 @@ class _ResultOrLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Selector<ItemsState, bool>(
       selector: (context, state) => state.isCompleted,
-      builder: (context, isCompleted, _) => isCompleted
-          ? Positioned.fill(
-              child: CompleteWidget(
-                score: assemble.game.state.score,
-                topScore: assemble.game.state.topScore,
-                onTap: () => assemble.game.onReset(),
-              ),
-            )
-          : Center(
-              child: Consumer<ColorPair>(
-                  builder: (context, colors, _) => CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation(colors.second))),
+      builder: (context, isCompleted, _) {
+        if (isCompleted) {
+          final game = context.watch<GameLogic>();
+          return Positioned.fill(
+            child: CompleteWidget(
+              score: game.state.score,
+              topScore: game.state.topScore,
+              onTap: () => game.onReset(),
             ),
+          );
+        } else {
+          return Center(
+            child: Consumer<ColorPair>(
+                builder: (context, colors, _) => CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(colors.second))),
+          );
+        }
+      },
     );
   }
 }
