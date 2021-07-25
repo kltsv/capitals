@@ -1,5 +1,6 @@
-import 'dart:async';
 import 'dart:math';
+
+import 'package:bloc/bloc.dart';
 
 import 'models.dart';
 
@@ -16,7 +17,7 @@ class ItemsState {
   GameItem? get next =>
       ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
 
-  bool get isCompleted => items.isNotEmpty  && currentIndex == items.length;
+  bool get isCompleted => items.isNotEmpty && currentIndex == items.length;
 
   bool get isEmpty => items.isEmpty;
 
@@ -39,22 +40,13 @@ class ItemsState {
       );
 }
 
-class ItemsLogic {
+class ItemsLogic extends Cubit<ItemsState> {
   final Random _random;
 
-  final _controller = StreamController<ItemsState>.broadcast();
-  var _state = ItemsState.empty;
-
-  ItemsLogic(this._random);
-
-  ItemsState get state => _state;
-
-  Stream<ItemsState> get stream => _controller.stream;
-
-  Future<void> dispose() => _controller.close();
+  ItemsLogic(this._random) : super(ItemsState.empty);
 
   void updateCurrent(int current) =>
-      _setState(state.copyWith(currentIndex: current));
+      emit(state.copyWith(currentIndex: current));
 
   void reset() {
     updateCurrent(0);
@@ -72,11 +64,6 @@ class ItemsLogic {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
     list.shuffle(_random);
-    _setState(state.copyWith(items: list));
-  }
-
-  void _setState(ItemsState state) {
-    _state = state;
-    _controller.add(_state);
+    emit(state.copyWith(items: list));
   }
 }

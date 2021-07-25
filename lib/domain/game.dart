@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:bloc/bloc.dart';
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
 
@@ -8,6 +9,8 @@ import 'models.dart';
 import 'palette.dart';
 
 class GameState {
+  static const GameState empty = GameState(0, 1);
+
   final int score;
   final int topScore;
 
@@ -25,7 +28,7 @@ class GameState {
       );
 }
 
-class GameLogic {
+class GameLogic extends Cubit<GameState> {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
@@ -37,22 +40,13 @@ class GameLogic {
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
 
-  final _controller = StreamController<GameState>.broadcast();
-  var _state = GameState(0, 1);
-
   GameLogic(
     this._random,
     this._api,
     this._assets,
     this._palette,
     this._itemsLogic,
-  );
-
-  GameState get state => _state;
-
-  Stream<GameState> get stream => _controller.stream;
-
-  Future<void> dispose() => _controller.close();
+  ) : super(GameState.empty);
 
   Future<void> onStartGame() async {
     try {
@@ -98,10 +92,10 @@ class GameLogic {
   Future<void> _updatePalette() => _palette.updatePalette(
       _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
 
-  void _updateScore(int score) => _setState(state.copyWith(score: score));
+  void _updateScore(int score) => emit(state.copyWith(score: score));
 
   void _updateTopScore(int topScore) =>
-      _setState(state.copyWith(topScore: topScore));
+      emit(state.copyWith(topScore: topScore));
 
   void _prepareItems(List<Country> countries) {
     _itemsLogic.updateItems(countries);
@@ -125,9 +119,4 @@ class GameLogic {
       })
       .where((element) => element.index != -1)
       .toList();
-
-  void _setState(GameState state) {
-    _state = state;
-    _controller.add(_state);
-  }
 }

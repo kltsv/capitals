@@ -26,7 +26,8 @@ class _AppState extends State<App> {
             initialData: assemble.itemsLogic.state,
           ),
           StreamProvider.value(
-            value: assemble.palette.stream,
+            value:
+                assemble.palette.stream.map((event) => event.colors).distinct(),
             initialData: assemble.palette.colors,
           ),
           StreamProvider.value(
