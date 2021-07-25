@@ -17,9 +17,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TCardController _cardsController = TCardController();
-  final palette = Assemble.palette;
-  final itemsLogic = Assemble.itemsLogic;
-  final game = Assemble.game;
+  final palette = assemble.palette;
+  final itemsLogic = assemble.itemsLogic;
+  final game = assemble.game;
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await Assemble.assets.load();
+    await assemble.assets.load();
     await game.onStartGame();
   }
 
@@ -134,8 +134,8 @@ class _Cards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ItemsState>(
-        initialData: Assemble.itemsLogic.state,
-        stream: Assemble.itemsLogic.stream,
+        initialData: assemble.itemsLogic.state,
+        stream: assemble.itemsLogic.stream,
         builder: (context, snapshot) {
           final state = snapshot.requireData;
           if (state.isEmpty) {
@@ -155,7 +155,7 @@ class _Cards extends StatelessWidget {
                 .map((e) => CapitalCard(key: ValueKey(e), item: e))
                 .toList(),
             onForward: (index, info) {
-              Assemble.game.onGuess(
+              assemble.game.onGuess(
                 index,
                 info.direction == SwipDirection.Right,
               );
@@ -171,8 +171,8 @@ class _Headers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ItemsState>(
-        initialData: Assemble.itemsLogic.state,
-        stream: Assemble.itemsLogic.stream,
+        initialData: assemble.itemsLogic.state,
+        stream: assemble.itemsLogic.stream,
         builder: (context, snapshot) {
           final state = snapshot.requireData;
           if (state.isEmpty) {
@@ -192,22 +192,22 @@ class _ResultOrLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<ItemsState>(
-        initialData: Assemble.itemsLogic.state,
-        stream: Assemble.itemsLogic.stream,
+        initialData: assemble.itemsLogic.state,
+        stream: assemble.itemsLogic.stream,
         builder: (context, snapshot) {
           final isCompleted = snapshot.requireData.isCompleted;
           return isCompleted
               ? Positioned.fill(
                   child: CompleteWidget(
-                    score: Assemble.game.state.score,
-                    topScore: Assemble.game.state.topScore,
-                    onTap: () => Assemble.game.onReset(),
+                    score: assemble.game.state.score,
+                    topScore: assemble.game.state.topScore,
+                    onTap: () => assemble.game.onReset(),
                   ),
                 )
               : Center(
                   child: StreamBuilder<ColorPair>(
-                      initialData: Assemble.palette.colors,
-                      stream: Assemble.palette.stream,
+                      initialData: assemble.palette.colors,
+                      stream: assemble.palette.stream,
                       builder: (context, snapshot) {
                         final colors = snapshot.requireData;
                         return CircularProgressIndicator(
@@ -224,13 +224,13 @@ class _ScoreProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<double>(
-        initialData: Assemble.game.state.progress,
-        stream: Assemble.game.stream.map((state) => state.progress).distinct(),
+        initialData: assemble.game.state.progress,
+        stream: assemble.game.stream.map((state) => state.progress).distinct(),
         builder: (context, snapshot) {
           final progress = snapshot.requireData;
           return StreamBuilder<ColorPair>(
-              initialData: Assemble.palette.colors,
-              stream: Assemble.palette.stream,
+              initialData: assemble.palette.colors,
+              stream: assemble.palette.stream,
               builder: (context, snapshot) {
                 final colors = snapshot.requireData;
                 return ProgressWave(
@@ -249,15 +249,15 @@ class _ItemsProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<double>(
-        initialData: Assemble.itemsLogic.state.progress,
-        stream: Assemble.itemsLogic.stream
+        initialData: assemble.itemsLogic.state.progress,
+        stream: assemble.itemsLogic.stream
             .map((state) => state.progress)
             .distinct(),
         builder: (context, snapshot) {
           final progress = snapshot.requireData;
           return StreamBuilder<Color>(
-              initialData: Assemble.palette.colors.second,
-              stream: Assemble.palette.stream
+              initialData: assemble.palette.colors.second,
+              stream: assemble.palette.stream
                   .map((state) => state.second)
                   .distinct(),
               builder: (context, snapshot) {
