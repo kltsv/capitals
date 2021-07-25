@@ -169,27 +169,24 @@ class _ResultOrLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<ItemsState, bool>(
-      selector: (context, state) => state.isCompleted,
-      builder: (context, isCompleted, _) {
-        if (isCompleted) {
-          final game = context.watch<GameLogic>();
-          return Positioned.fill(
-            child: CompleteWidget(
-              score: game.state.score,
-              topScore: game.state.topScore,
-              onTap: () => game.onReset(),
-            ),
-          );
-        } else {
-          return Center(
-            child: Consumer<ColorPair>(
-                builder: (context, colors, _) => CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(colors.second))),
-          );
-        }
-      },
-    );
+    final isCompleted =
+        context.select<ItemsState, bool>((state) => state.isCompleted);
+    if (isCompleted) {
+      final game = context.watch<GameLogic>();
+      return Positioned.fill(
+        child: CompleteWidget(
+          score: game.state.score,
+          topScore: game.state.topScore,
+          onTap: () => game.onReset(),
+        ),
+      );
+    } else {
+      return Center(
+        child: Consumer<ColorPair>(
+            builder: (context, colors, _) => CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(colors.second))),
+      );
+    }
   }
 }
 
