@@ -2,14 +2,13 @@ import 'package:capitals/domain/assemble.dart';
 import 'package:capitals/domain/game.dart';
 import 'package:capitals/domain/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:provider/provider.dart';
 
 import 'components.dart';
 import 'home_page.dart';
 
-final _appName = '${GameLogic.countryLimit} Capitals';
+final _appName = '$countryLimit Capitals';
 
 class App extends StatefulWidget {
   @override
@@ -24,7 +23,6 @@ class _AppState extends State<App> {
         store: globalStore,
         child: MultiProvider(
           providers: [
-            BlocProvider.value(value: assemble.game),
             Provider.value(value: assemble.assets),
             StreamProvider.value(
               value: assemble.itemsLogic.stream,
@@ -36,10 +34,6 @@ class _AppState extends State<App> {
                   .distinct(),
               initialData: assemble.palette.colors,
             ),
-            StreamProvider.value(
-              value: assemble.game.stream,
-              initialData: assemble.game.state,
-            )
           ],
           child: MaterialApp(
             title: _appName,

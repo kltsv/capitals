@@ -4,8 +4,10 @@ import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
 import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/models.dart';
+import 'package:capitals/domain/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:provider/provider.dart';
 import 'package:tcard/tcard.dart';
 
@@ -29,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> onInit() async {
     await context.read<Assets>().load();
-    context.read<GameLogic>().add(const OnStartGameEvent());
+    StoreProvider.of<GlobalState>(context, listen: false).dispatch(OnStartGameThunk());
   }
 
   @override
@@ -135,10 +137,10 @@ class _Cards extends StatelessWidget {
           cards:
               items.map((e) => CapitalCard(key: ValueKey(e), item: e)).toList(),
           onForward: (index, info) {
-            context.read<GameLogic>().add(OnGuessEvent(
-                  index,
-                  info.direction == SwipDirection.Right,
-                ));
+            StoreProvider.of<GlobalState>(context).dispatch(OnGuessThunk(
+              index,
+              info.direction == SwipDirection.Right,
+            ));
           },
         );
       },
@@ -173,13 +175,13 @@ class _ResultOrLoading extends StatelessWidget {
     final isCompleted =
         context.select<ItemsState, bool>((state) => state.isCompleted);
     if (isCompleted) {
-      final game = context.watch<GameLogic>();
       return Positioned.fill(
-        child: BlocBuilder<GameLogic, GameState>(
+        child: StoreConnector<GlobalState, GameState>(
+          converter: (store) => store.state.game,
           builder: (context, state) => CompleteWidget(
             score: state.score,
             topScore: state.topScore,
-            onTap: () => game.add(const OnResetGameEvent()),
+            onTap: () => StoreProvider.of<GlobalState>(context).dispatch(OnResetThunk()),
           ),
         ),
       );
@@ -198,16 +200,18 @@ class _ScoreProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector2<GameState, ColorPair, _ColoredProgressModel>(
-      selector: (context, gameState, colorPair) =>
-          _ColoredProgressModel(gameState.progress, colorPair.main),
-      builder: (context, model, _) {
-        return ProgressWave(
-          color: model.color.withOpacity(0.6),
-          progress: model.progress,
-          duration: Duration(seconds: 15),
-        );
-      },
+    return StoreConnector<GlobalState, GameState>(
+      converter: (store) => store.state.game,
+      builder: (context, state) => Selector<ColorPair, Color>(
+        selector: (context, colorPair) => colorPair.main,
+        builder: (context, color, _) {
+          return ProgressWave(
+            color: color.withOpacity(0.6),
+            progress: state.progress,
+            duration: Duration(seconds: 15),
+          );
+        },
+      ),
     );
   }
 }

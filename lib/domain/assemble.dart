@@ -5,10 +5,8 @@ import 'package:capitals/domain/palette.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-import 'game.dart';
-import 'items.dart';
-
 import 'assemble.config.dart';
+import 'items.dart';
 
 final getIt = GetIt.I;
 
@@ -31,11 +29,6 @@ abstract class AssembleModule {
 
   @lazySingleton
   ItemsLogic provideItemsLogic(Random random) => ItemsLogic(random);
-
-  @lazySingleton
-  GameLogic provideGameLogic(Random random, Api api, Assets assets,
-          PaletteLogic palette, ItemsLogic itemsLogic) =>
-      GameLogic(random, api, assets, palette, itemsLogic);
 }
 
 class Assemble {
@@ -48,8 +41,6 @@ class Assemble {
   PaletteLogic get palette => getIt.get<PaletteLogic>();
 
   ItemsLogic get itemsLogic => getIt.get<ItemsLogic>();
-
-  GameLogic get game => getIt.get<GameLogic>();
 
   const Assemble._();
 }

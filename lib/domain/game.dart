@@ -1,16 +1,16 @@
-import 'dart:async';
 import 'dart:math';
 
-import 'package:bloc/bloc.dart';
-import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/assemble.dart';
-import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 import 'models.dart';
-import 'palette.dart';
+
+const _successGuess = 3;
+const _successFake = 1;
+const _fail = -1;
+const countryLimit = 30;
 
 class GameState {
   static const GameState empty = GameState(0, 1);
@@ -58,7 +58,47 @@ GameState _updateTopScore(GameState state, UpdateTopScoreAction action) =>
 class OnStartGameThunk
     extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
   @override
-  call(Store<GlobalState> store, Assemble service) {}
+  call(Store<GlobalState> store, Assemble service) async {
+    var resultState = store.state;
+    try {
+      var countries = await service.api.fetchCountries();
+      countries = _countryWithImages(service, countries);
+      countries.shuffle(service.random);
+      countries = countries.sublist(0, countryLimit);
+
+      // TODO use dispatch
+      service.itemsLogic.updateItems(countries);
+
+      final originals = service.itemsLogic.state.originalsLength;
+      final fakes = service.itemsLogic.state.fakeLength;
+      final topScore = originals * _successGuess + fakes * _successFake;
+      store.dispatch(UpdateTopScoreAction(topScore));
+    } catch (e) {
+      // TODO handle error
+      print(e);
+    }
+    // TODO use dispatch
+    await service.palette.updatePalette(service.itemsLogic.state.current.image,
+        service.itemsLogic.state.next?.image);
+    return resultState;
+  }
+
+  List<Country> _countryWithImages(Assemble service, List<Country> countries) =>
+      countries
+          .where((element) => element.capital.isNotEmpty)
+          .map((e) {
+            final imageUrls = service.assets.capitalPictures(e.capital);
+            if (imageUrls.isNotEmpty) {
+              final randomIndex = service.random.nextInt(imageUrls.length);
+              return Country(e.name, e.capital,
+                  imageUrls: imageUrls, index: randomIndex);
+            } else {
+              return Country(e.name, e.capital,
+                  imageUrls: imageUrls, index: -1);
+            }
+          })
+          .where((element) => element.index != -1)
+          .toList();
 }
 
 class OnGuessThunk
@@ -69,63 +109,8 @@ class OnGuessThunk
   OnGuessThunk(this.index, this.isTrue);
 
   @override
-  call(Store<GlobalState> store, Assemble service) {}
-}
-
-class OnResetThunk
-    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
-  @override
-  call(Store<GlobalState> store, Assemble service) {
-
-  }
-}
-
-class GameLogic extends Bloc<GameEvent, GameState> {
-  static const _successGuess = 3;
-  static const _successFake = 1;
-  static const _fail = -1;
-  static const countryLimit = 30;
-
-  final Random _random;
-  final Api _api;
-  final Assets _assets;
-  final PaletteLogic _palette;
-  final ItemsLogic _itemsLogic;
-
-  GameLogic(
-    this._random,
-    this._api,
-    this._assets,
-    this._palette,
-    this._itemsLogic,
-  ) : super(GameState.empty);
-
-  Future<GameState> _onStartGame() async {
-    var resultState = state;
-    try {
-      var countries = await _api.fetchCountries();
-      countries = _countryWithImages(countries);
-      countries.shuffle(_random);
-      countries = countries.sublist(0, countryLimit);
-      resultState = _prepareItems(countries);
-    } catch (e) {
-      // TODO handle error
-      print(e);
-    }
-    await _updatePalette();
-    return resultState;
-  }
-
-  GameState _onReset() {
-    emit(_updateScore(0));
-    emit(_updateTopScore(1));
-    _itemsLogic.reset();
-    return _prepareItems(
-        _itemsLogic.state.items.map((e) => e.original).toList());
-  }
-
-  Future<GameState> _onGuess(int index, bool isTrue) async {
-    final isActuallyTrue = _itemsLogic.state.isCurrentTrue;
+  call(Store<GlobalState> store, Assemble service) async {
+    final isActuallyTrue = service.itemsLogic.state.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -136,80 +121,37 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     if (isTrue && !isActuallyTrue || !isTrue && isActuallyTrue) {
       scoreUpdate = _fail;
     }
-    final resultState = _updateScore(state.score + scoreUpdate);
-    _itemsLogic.updateCurrent(index);
+    store.dispatch(UpdateScoreAction(store.state.game.score + scoreUpdate));
 
-    if (!_itemsLogic.state.isCompleted) {
-      await _updatePalette();
+    // TODO use dispatch
+    service.itemsLogic.updateCurrent(index);
+
+    // TODO use dispatch (and itemsState)
+    if (!service.itemsLogic.state.isCompleted) {
+      // TODO use dispatch
+      await service.palette.updatePalette(
+          service.itemsLogic.state.current.image,
+          service.itemsLogic.state.next?.image);
     }
-    return resultState;
   }
+}
 
-  Future<void> _updatePalette() => _palette.updatePalette(
-      _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
+class OnResetThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  @override
+  call(Store<GlobalState> store, Assemble service) {
+    store.dispatch(UpdateScoreAction(0));
+    store.dispatch(UpdateTopScoreAction(1));
 
-  GameState _updateScore(int score) => state.copyWith(score: score);
+    service.itemsLogic.reset();
 
-  GameState _updateTopScore(int topScore) => state.copyWith(topScore: topScore);
+    // TODO use dispatch
+    service.itemsLogic.updateItems(
+        service.itemsLogic.state.items.map((e) => e.original).toList());
 
-  GameState _prepareItems(List<Country> countries) {
-    _itemsLogic.updateItems(countries);
-    final originals = _itemsLogic.state.originalsLength;
-    final fakes = _itemsLogic.state.fakeLength;
+    final originals = service.itemsLogic.state.originalsLength;
+    final fakes = service.itemsLogic.state.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;
-    return _updateTopScore(topScore);
+    store.dispatch(UpdateTopScoreAction(topScore));
   }
-
-  List<Country> _countryWithImages(List<Country> countries) => countries
-      .where((element) => element.capital.isNotEmpty)
-      .map((e) {
-        final imageUrls = _assets.capitalPictures(e.capital);
-        if (imageUrls.isNotEmpty) {
-          final randomIndex = _random.nextInt(imageUrls.length);
-          return Country(e.name, e.capital,
-              imageUrls: imageUrls, index: randomIndex);
-        } else {
-          return Country(e.name, e.capital, imageUrls: imageUrls, index: -1);
-        }
-      })
-      .where((element) => element.index != -1)
-      .toList();
-
-  @override
-  Stream<GameState> mapEventToState(GameEvent event) async* {
-    if (event is OnStartGameEvent) {
-      yield await _onStartGame();
-    } else if (event is OnResetGameEvent) {
-      yield _onReset();
-    } else if (event is OnGuessEvent) {
-      yield await _onGuess(event.index, event.isTrue);
-    }
-  }
-
-  @override
-  void onTransition(Transition<GameEvent, GameState> transition) {
-    super.onTransition(transition);
-    print('Bloc: ${transition.event.runtimeType}:'
-        ' ${transition.currentState.score}/${transition.currentState.topScore} '
-        '-> ${transition.nextState.score}/${transition.currentState.topScore}');
-  }
-}
-
-abstract class GameEvent {
-  const GameEvent();
-}
-
-class OnStartGameEvent implements GameEvent {
-  const OnStartGameEvent();
-}
-
-class OnResetGameEvent implements GameEvent {
-  const OnResetGameEvent();
-}
-
-class OnGuessEvent implements GameEvent {
-  final int index;
-  final bool isTrue;
-
-  const OnGuessEvent(this.index, this.isTrue);
 }
