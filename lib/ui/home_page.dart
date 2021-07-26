@@ -31,76 +31,80 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> onInit() async {
     await context.read<Assets>().load();
-    StoreProvider.of<GlobalState>(context, listen: false).dispatch(OnStartGameThunk());
+    StoreProvider.of<GlobalState>(context, listen: false)
+        .dispatch(OnStartGameThunk());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<ColorPair>(
-        builder: (context, colors, child) {
+      body: StoreConnector<GlobalState, ColorPair>(
+        distinct: true,
+        converter: (store) => store.state.palette.colors,
+        builder: (context, colors) {
           return GradientBackground(
             startColor: colors.main.withOpacity(0.3),
             endColor: colors.second.withOpacity(0.3),
-            child: child,
+            child: SafeArea(
+              bottom: false,
+              child: Selector<ItemsState, bool>(
+                builder: (context, isCompleted, _) => Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _ItemsProgress(),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: _ScoreProgress(),
+                    ),
+                    _ResultOrLoading(),
+                    if (!isCompleted)
+                      CenterLandscape(
+                        child: LayoutBuilder(
+                          builder: (
+                            BuildContext context,
+                            BoxConstraints constraints,
+                          ) =>
+                              Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12)
+                                        .copyWith(top: 12.0),
+                                child: _Headers(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: _Cards(
+                                  cardsController: _cardsController,
+                                  constraints: constraints,
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(12.0),
+                                child: Controls(
+                                  onAnswer: (isTrue) =>
+                                      _cardsController.forward(
+                                    direction: isTrue
+                                        ? SwipDirection.Right
+                                        : SwipDirection.Left,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                selector: (context, state) => state.isCompleted,
+              ),
+            ),
           );
         },
-        child: SafeArea(
-          bottom: false,
-          child: Selector<ItemsState, bool>(
-            builder: (context, isCompleted, _) => Stack(
-              children: [
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _ItemsProgress(),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: _ScoreProgress(),
-                ),
-                _ResultOrLoading(),
-                if (!isCompleted)
-                  CenterLandscape(
-                    child: LayoutBuilder(
-                      builder: (
-                        BuildContext context,
-                        BoxConstraints constraints,
-                      ) =>
-                          Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 12)
-                                .copyWith(top: 12.0),
-                            child: _Headers(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: _Cards(
-                              cardsController: _cardsController,
-                              constraints: constraints,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.all(12.0),
-                            child: Controls(
-                              onAnswer: (isTrue) => _cardsController.forward(
-                                direction: isTrue
-                                    ? SwipDirection.Right
-                                    : SwipDirection.Left,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            selector: (context, state) => state.isCompleted,
-          ),
-        ),
       ),
     );
   }
@@ -177,19 +181,23 @@ class _ResultOrLoading extends StatelessWidget {
     if (isCompleted) {
       return Positioned.fill(
         child: StoreConnector<GlobalState, GameState>(
+          distinct: true,
           converter: (store) => store.state.game,
           builder: (context, state) => CompleteWidget(
             score: state.score,
             topScore: state.topScore,
-            onTap: () => StoreProvider.of<GlobalState>(context).dispatch(OnResetThunk()),
+            onTap: () =>
+                StoreProvider.of<GlobalState>(context).dispatch(OnResetThunk()),
           ),
         ),
       );
     } else {
       return Center(
-        child: Consumer<ColorPair>(
-            builder: (context, colors, _) => CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(colors.second))),
+        child: StoreConnector<GlobalState, Color>(
+            distinct: true,
+            converter: (store) => store.state.palette.colors.second,
+            builder: (context, color) => CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(color))),
       );
     }
   }
@@ -200,17 +208,14 @@ class _ScoreProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<GlobalState, GameState>(
-      converter: (store) => store.state.game,
-      builder: (context, state) => Selector<ColorPair, Color>(
-        selector: (context, colorPair) => colorPair.main,
-        builder: (context, color, _) {
-          return ProgressWave(
-            color: color.withOpacity(0.6),
-            progress: state.progress,
-            duration: Duration(seconds: 15),
-          );
-        },
+    return StoreConnector<GlobalState, _ColoredProgressModel>(
+      distinct: true,
+      converter: (store) => _ColoredProgressModel(
+          store.state.game.progress, store.state.palette.colors.main),
+      builder: (context, model) => ProgressWave(
+        color: model.color.withOpacity(0.6),
+        progress: model.progress,
+        duration: Duration(seconds: 15),
       ),
     );
   }
@@ -221,16 +226,19 @@ class _ItemsProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector2<ItemsState, ColorPair, _ColoredProgressModel>(
-      selector: (context, itemsState, colorPair) =>
-          _ColoredProgressModel(itemsState.progress, colorPair.second),
-      builder: (context, model, _) {
-        return ProgressWave(
-          color: model.color.withOpacity(0.6),
-          progress: model.progress,
-          duration: Duration(seconds: 15),
-        );
-      },
+    return StoreConnector<GlobalState, Color>(
+      distinct: true,
+      converter: (store) => store.state.palette.colors.second,
+      builder: (context, color) => Selector<ItemsState, double>(
+        selector: (context, itemsState) => itemsState.progress,
+        builder: (context, progress, _) {
+          return ProgressWave(
+            color: color.withOpacity(0.6),
+            progress: progress,
+            duration: Duration(seconds: 15),
+          );
+        },
+      ),
     );
   }
 }

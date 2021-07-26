@@ -28,12 +28,6 @@ class _AppState extends State<App> {
               value: assemble.itemsLogic.stream,
               initialData: assemble.itemsLogic.state,
             ),
-            StreamProvider.value(
-              value: assemble.palette.stream
-                  .map((event) => event.colors)
-                  .distinct(),
-              initialData: assemble.palette.colors,
-            ),
           ],
           child: MaterialApp(
             title: _appName,

@@ -9,8 +9,11 @@ final globalStore = Store<GlobalState>(_globalReducer,
     initialState: GlobalState.initState,
     middleware: [ExtraArgumentThunkMiddleware(assemble)]);
 
-GlobalState _globalReducer(GlobalState state, action) =>
-    GlobalState(gameReducers(state.game, action), state.items, state.palette);
+GlobalState _globalReducer(GlobalState state, action) => GlobalState(
+      gameReducers(state.game, action),
+      state.items,
+      paletteReducers(state.palette, action),
+    );
 
 class GlobalState {
   static const initState =

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:capitals/data/data.dart';
-import 'package:capitals/domain/palette.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -25,9 +24,6 @@ abstract class AssembleModule {
   Assets providerAssets() => Assets();
 
   @lazySingleton
-  PaletteLogic providePaletteLogic() => PaletteLogic();
-
-  @lazySingleton
   ItemsLogic provideItemsLogic(Random random) => ItemsLogic(random);
 }
 
@@ -37,8 +33,6 @@ class Assemble {
   Api get api => getIt.get<Api>();
 
   Assets get assets => getIt.get<Assets>();
-
-  PaletteLogic get palette => getIt.get<PaletteLogic>();
 
   ItemsLogic get itemsLogic => getIt.get<ItemsLogic>();
 

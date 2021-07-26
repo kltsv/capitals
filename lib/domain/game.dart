@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:capitals/domain/assemble.dart';
+import 'package:capitals/domain/palette.dart';
 import 'package:capitals/domain/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -59,7 +60,6 @@ class OnStartGameThunk
     extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
   @override
   call(Store<GlobalState> store, Assemble service) async {
-    var resultState = store.state;
     try {
       var countries = await service.api.fetchCountries();
       countries = _countryWithImages(service, countries);
@@ -77,10 +77,8 @@ class OnStartGameThunk
       // TODO handle error
       print(e);
     }
-    // TODO use dispatch
-    await service.palette.updatePalette(service.itemsLogic.state.current.image,
-        service.itemsLogic.state.next?.image);
-    return resultState;
+    store.dispatch(UpdatePaletteThunk(service.itemsLogic.state.current.image,
+        service.itemsLogic.state.next?.image));
   }
 
   List<Country> _countryWithImages(Assemble service, List<Country> countries) =>
@@ -128,10 +126,8 @@ class OnGuessThunk
 
     // TODO use dispatch (and itemsState)
     if (!service.itemsLogic.state.isCompleted) {
-      // TODO use dispatch
-      await service.palette.updatePalette(
-          service.itemsLogic.state.current.image,
-          service.itemsLogic.state.next?.image);
+      store.dispatch(UpdatePaletteThunk(service.itemsLogic.state.current.image,
+          service.itemsLogic.state.next?.image));
     }
   }
 }
