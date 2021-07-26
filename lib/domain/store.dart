@@ -11,7 +11,7 @@ final globalStore = Store<GlobalState>(_globalReducer,
 
 GlobalState _globalReducer(GlobalState state, action) => GlobalState(
       gameReducers(state.game, action),
-      state.items,
+      itemsReducers(state.items, action),
       paletteReducers(state.palette, action),
     );
 

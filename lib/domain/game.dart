@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:capitals/domain/assemble.dart';
+import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/palette.dart';
 import 'package:capitals/domain/store.dart';
 import 'package:redux/redux.dart';
@@ -66,19 +67,20 @@ class OnStartGameThunk
       countries.shuffle(service.random);
       countries = countries.sublist(0, countryLimit);
 
-      // TODO use dispatch
-      service.itemsLogic.updateItems(countries);
+      store.dispatch(UpdateItemsThunk(countries));
+      final itemsState = store.state.items;
 
-      final originals = service.itemsLogic.state.originalsLength;
-      final fakes = service.itemsLogic.state.fakeLength;
+      final originals = itemsState.originalsLength;
+      final fakes = itemsState.fakeLength;
       final topScore = originals * _successGuess + fakes * _successFake;
       store.dispatch(UpdateTopScoreAction(topScore));
     } catch (e) {
       // TODO handle error
       print(e);
     }
-    store.dispatch(UpdatePaletteThunk(service.itemsLogic.state.current.image,
-        service.itemsLogic.state.next?.image));
+    final itemsState = store.state.items;
+    store.dispatch(
+        UpdatePaletteThunk(itemsState.current.image, itemsState.next?.image));
   }
 
   List<Country> _countryWithImages(Assemble service, List<Country> countries) =>
@@ -108,7 +110,7 @@ class OnGuessThunk
 
   @override
   call(Store<GlobalState> store, Assemble service) async {
-    final isActuallyTrue = service.itemsLogic.state.isCurrentTrue;
+    final isActuallyTrue = store.state.items.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
       scoreUpdate = _successGuess;
@@ -121,13 +123,11 @@ class OnGuessThunk
     }
     store.dispatch(UpdateScoreAction(store.state.game.score + scoreUpdate));
 
-    // TODO use dispatch
-    service.itemsLogic.updateCurrent(index);
+    store.dispatch(UpdateCurrentAction(index));
 
-    // TODO use dispatch (and itemsState)
-    if (!service.itemsLogic.state.isCompleted) {
-      store.dispatch(UpdatePaletteThunk(service.itemsLogic.state.current.image,
-          service.itemsLogic.state.next?.image));
+    if (!store.state.items.isCompleted) {
+      store.dispatch(UpdatePaletteThunk(
+          store.state.items.current.image, store.state.items.next?.image));
     }
   }
 }
@@ -139,14 +139,14 @@ class OnResetThunk
     store.dispatch(UpdateScoreAction(0));
     store.dispatch(UpdateTopScoreAction(1));
 
-    service.itemsLogic.reset();
+    store.dispatch(ResetItemsThunk());
 
-    // TODO use dispatch
-    service.itemsLogic.updateItems(
-        service.itemsLogic.state.items.map((e) => e.original).toList());
+    final itemsState = store.state.items;
+    store.dispatch(
+        UpdateItemsThunk(itemsState.items.map((e) => e.original).toList()));
 
-    final originals = service.itemsLogic.state.originalsLength;
-    final fakes = service.itemsLogic.state.fakeLength;
+    final originals = itemsState.originalsLength;
+    final fakes = itemsState.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;
     store.dispatch(UpdateTopScoreAction(topScore));
   }

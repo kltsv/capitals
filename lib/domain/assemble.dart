@@ -22,9 +22,6 @@ abstract class AssembleModule {
 
   @lazySingleton
   Assets providerAssets() => Assets();
-
-  @lazySingleton
-  ItemsLogic provideItemsLogic(Random random) => ItemsLogic(random);
 }
 
 class Assemble {
@@ -33,8 +30,6 @@ class Assemble {
   Api get api => getIt.get<Api>();
 
   Assets get assets => getIt.get<Assets>();
-
-  ItemsLogic get itemsLogic => getIt.get<ItemsLogic>();
 
   const Assemble._();
 }

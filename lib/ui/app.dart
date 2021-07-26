@@ -24,10 +24,6 @@ class _AppState extends State<App> {
         child: MultiProvider(
           providers: [
             Provider.value(value: assemble.assets),
-            StreamProvider.value(
-              value: assemble.itemsLogic.stream,
-              initialData: assemble.itemsLogic.state,
-            ),
           ],
           child: MaterialApp(
             title: _appName,

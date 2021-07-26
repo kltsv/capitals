@@ -47,8 +47,10 @@ class _HomePageState extends State<HomePage> {
             endColor: colors.second.withOpacity(0.3),
             child: SafeArea(
               bottom: false,
-              child: Selector<ItemsState, bool>(
-                builder: (context, isCompleted, _) => Stack(
+              child: StoreConnector<GlobalState, bool>(
+                distinct: true,
+                converter: (store) => store.state.items.isCompleted,
+                builder: (context, isCompleted) => Stack(
                   children: [
                     Align(
                       alignment: Alignment.bottomCenter,
@@ -100,7 +102,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                   ],
                 ),
-                selector: (context, state) => state.isCompleted,
               ),
             ),
           );
@@ -122,9 +123,10 @@ class _Cards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<ItemsState, List<GameItem>>(
-      selector: (context, state) => state.items,
-      builder: (context, items, _) {
+    return StoreConnector<GlobalState, List<GameItem>>(
+      distinct: true,
+      converter: (store) => store.state.items.items,
+      builder: (context, items) {
         if (items.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -157,8 +159,10 @@ class _Headers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ItemsState>(
-      builder: (context, state, _) {
+    return StoreConnector<GlobalState, ItemsState>(
+      distinct: true,
+      converter: (store) => store.state.items,
+      builder: (context, state) {
         if (state.isEmpty) {
           return const SizedBox.shrink();
         }
@@ -176,30 +180,33 @@ class _ResultOrLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted =
-        context.select<ItemsState, bool>((state) => state.isCompleted);
-    if (isCompleted) {
-      return Positioned.fill(
-        child: StoreConnector<GlobalState, GameState>(
-          distinct: true,
-          converter: (store) => store.state.game,
-          builder: (context, state) => CompleteWidget(
-            score: state.score,
-            topScore: state.topScore,
-            onTap: () =>
-                StoreProvider.of<GlobalState>(context).dispatch(OnResetThunk()),
-          ),
-        ),
-      );
-    } else {
-      return Center(
-        child: StoreConnector<GlobalState, Color>(
-            distinct: true,
-            converter: (store) => store.state.palette.colors.second,
-            builder: (context, color) => CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(color))),
-      );
-    }
+    return StoreConnector<GlobalState, bool>(
+        distinct: true,
+        converter: (store) => store.state.items.isCompleted,
+        builder: (context, isCompleted) {
+          if (isCompleted) {
+            return Positioned.fill(
+              child: StoreConnector<GlobalState, GameState>(
+                distinct: true,
+                converter: (store) => store.state.game,
+                builder: (context, state) => CompleteWidget(
+                  score: state.score,
+                  topScore: state.topScore,
+                  onTap: () => StoreProvider.of<GlobalState>(context)
+                      .dispatch(OnResetThunk()),
+                ),
+              ),
+            );
+          } else {
+            return Center(
+              child: StoreConnector<GlobalState, Color>(
+                  distinct: true,
+                  converter: (store) => store.state.palette.colors.second,
+                  builder: (context, color) => CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation(color))),
+            );
+          }
+        });
   }
 }
 
@@ -226,18 +233,14 @@ class _ItemsProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<GlobalState, Color>(
+    return StoreConnector<GlobalState, _ColoredProgressModel>(
       distinct: true,
-      converter: (store) => store.state.palette.colors.second,
-      builder: (context, color) => Selector<ItemsState, double>(
-        selector: (context, itemsState) => itemsState.progress,
-        builder: (context, progress, _) {
-          return ProgressWave(
-            color: color.withOpacity(0.6),
-            progress: progress,
-            duration: Duration(seconds: 15),
-          );
-        },
+      converter: (store) => _ColoredProgressModel(
+          store.state.items.progress, store.state.palette.colors.second),
+      builder: (context, model) => ProgressWave(
+        color: model.color.withOpacity(0.6),
+        progress: model.progress,
+        duration: Duration(seconds: 15),
       ),
     );
   }

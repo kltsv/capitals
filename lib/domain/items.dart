@@ -1,8 +1,9 @@
-import 'dart:math';
+import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
-import 'package:bloc/bloc.dart';
-
+import 'assemble.dart';
 import 'models.dart';
+import 'store.dart';
 
 class ItemsState {
   static const empty = ItemsState(0, []);
@@ -40,30 +41,56 @@ class ItemsState {
       );
 }
 
-class ItemsLogic extends Cubit<ItemsState> {
-  final Random _random;
+final itemsReducers = combineReducers<ItemsState>([
+  TypedReducer<ItemsState, UpdateCurrentAction>(_updateCurrent),
+  TypedReducer<ItemsState, _UpdateItemsAction>(_updateItems),
+]);
 
-  ItemsLogic(this._random) : super(ItemsState.empty);
+class UpdateCurrentAction {
+  final int current;
 
-  void updateCurrent(int current) =>
-      emit(state.copyWith(currentIndex: current));
+  const UpdateCurrentAction(this.current);
+}
 
-  void reset() {
-    updateCurrent(0);
-    final countries = state.items.map((e) => e.original).toList();
-    updateItems(countries);
-  }
+class _UpdateItemsAction {
+  final List<GameItem> items;
 
-  void updateItems(List<Country> countries) {
+  const _UpdateItemsAction(this.items);
+}
+
+ItemsState _updateCurrent(ItemsState state, UpdateCurrentAction action) =>
+    state.copyWith(currentIndex: action.current);
+
+ItemsState _updateItems(ItemsState state, _UpdateItemsAction action) =>
+    state.copyWith(items: action.items);
+
+class UpdateItemsThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  final List<Country> countries;
+
+  UpdateItemsThunk(this.countries);
+
+  @override
+  call(Store<GlobalState> store, Assemble service) {
     final originals = countries.sublist(0, countries.length ~/ 2);
     final fakes = countries.sublist(countries.length ~/ 2, countries.length);
-    fakes.shuffle(_random);
+    fakes.shuffle(service.random);
     final list = <GameItem>[];
     list.addAll(originals.map((e) => GameItem(e)));
     for (var i = 0; i < fakes.length; i++) {
       list.add(GameItem(fakes[i], fake: fakes[(i + 1) % fakes.length]));
     }
-    list.shuffle(_random);
-    emit(state.copyWith(items: list));
+    list.shuffle(service.random);
+    store.dispatch(_UpdateItemsAction(list));
+  }
+}
+
+class ResetItemsThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  @override
+  call(Store<GlobalState> store, Assemble service) {
+    store.dispatch(UpdateCurrentAction(0));
+    final countries = store.state.items.items.map((e) => e.original).toList();
+    store.dispatch(UpdateItemsThunk(countries));
   }
 }
