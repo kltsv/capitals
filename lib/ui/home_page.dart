@@ -1,14 +1,11 @@
 import 'dart:math';
 
-import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
 import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/models.dart';
 import 'package:capitals/domain/store.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:provider/provider.dart';
 import 'package:tcard/tcard.dart';
 
 import 'components.dart';
@@ -30,7 +27,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await context.read<Assets>().load();
     StoreProvider.of<GlobalState>(context, listen: false)
         .dispatch(OnStartGameThunk());
   }

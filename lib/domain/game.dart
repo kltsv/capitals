@@ -61,6 +61,7 @@ class OnStartGameThunk
     extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
   @override
   call(Store<GlobalState> store, Assemble service) async {
+    await service.assets.load();
     try {
       var countries = await service.api.fetchCountries();
       countries = _countryWithImages(service, countries);

@@ -14,10 +14,6 @@ dependencies:
   palette_generator: ^0.3.0
   wave: ^0.2.0
 
-  get_it: ^7.2.0
-  injectable: ^1.4.1
-  provider: ^5.0.0
-  flutter_bloc: ^7.0.1
   redux: ^5.0.0
   flutter_redux: ^0.8.2
   redux_thunk: ^0.4.0

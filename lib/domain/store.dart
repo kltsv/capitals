@@ -7,7 +7,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 final globalStore = Store<GlobalState>(_globalReducer,
     initialState: GlobalState.initState,
-    middleware: [ExtraArgumentThunkMiddleware(assemble)]);
+    middleware: [ExtraArgumentThunkMiddleware(Assemble())]);
 
 GlobalState _globalReducer(GlobalState state, action) => GlobalState(
       gameReducers(state.game, action),
