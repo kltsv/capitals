@@ -7,6 +7,8 @@ import 'package:palette_generator/palette_generator.dart';
 import 'models.dart';
 
 class PaletteState {
+  static const empty = PaletteState();
+
   static const _defaultColor = Colors.grey;
 
   static ColorPair _buildColors(PaletteGenerator? palette) {
@@ -40,7 +42,7 @@ class PaletteState {
       );
 }
 
-class PaletteLogic extends Cubit<PaletteState>{
+class PaletteLogic extends Cubit<PaletteState> {
   PaletteLogic() : super(PaletteState());
 
   ColorPair get colors => state.colors;

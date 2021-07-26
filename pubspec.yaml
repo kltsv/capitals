@@ -18,6 +18,9 @@ dependencies:
   injectable: ^1.4.1
   provider: ^5.0.0
   flutter_bloc: ^7.0.1
+  redux: ^5.0.0
+  flutter_redux: ^0.8.2
+  redux_thunk: ^0.4.0
 
 dev_dependencies:
   flutter_test:

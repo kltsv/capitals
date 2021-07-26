@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
+import 'package:redux/redux.dart';
 
 import 'models.dart';
 import 'palette.dart';
@@ -27,6 +28,8 @@ class GameState {
         topScore ?? this.topScore,
       );
 }
+
+final gameReducers = combineReducers<GameState>([]);
 
 class GameLogic extends Bloc<GameEvent, GameState> {
   static const _successGuess = 3;
