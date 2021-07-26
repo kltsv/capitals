@@ -3,8 +3,11 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:capitals/data/data.dart';
+import 'package:capitals/domain/assemble.dart';
 import 'package:capitals/domain/items.dart';
+import 'package:capitals/domain/store.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 import 'models.dart';
 import 'palette.dart';
@@ -29,7 +32,53 @@ class GameState {
       );
 }
 
-final gameReducers = combineReducers<GameState>([]);
+final gameReducers = combineReducers<GameState>([
+  TypedReducer<GameState, UpdateScoreAction>(_updateScore),
+  TypedReducer<GameState, UpdateTopScoreAction>(_updateTopScore),
+]);
+
+class UpdateScoreAction {
+  final int score;
+
+  const UpdateScoreAction(this.score);
+}
+
+class UpdateTopScoreAction {
+  final int topScore;
+
+  const UpdateTopScoreAction(this.topScore);
+}
+
+GameState _updateScore(GameState state, UpdateScoreAction action) =>
+    state.copyWith(score: action.score);
+
+GameState _updateTopScore(GameState state, UpdateTopScoreAction action) =>
+    state.copyWith(topScore: action.topScore);
+
+class OnStartGameThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  @override
+  call(Store<GlobalState> store, Assemble service) {}
+}
+
+class OnGuessThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  final int index;
+  final bool isTrue;
+
+  OnGuessThunk(this.index, this.isTrue);
+
+  @override
+  call(Store<GlobalState> store, Assemble service) {}
+}
+
+class OnResetThunk
+    extends CallableThunkActionWithExtraArgument<GlobalState, Assemble> {
+  @override
+  call(Store<GlobalState> store, Assemble service) {
+
+  }
+}
 
 class GameLogic extends Bloc<GameEvent, GameState> {
   static const _successGuess = 3;
