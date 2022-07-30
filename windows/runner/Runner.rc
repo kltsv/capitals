@@ -90,10 +90,10 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.ringov" "\0"
-            VALUE "FileDescription", "A fancy flutter app example." "\0"
+            VALUE "FileDescription", "capitals" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "capitals" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2021 com.ringov. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 com.ringov. All rights reserved." "\0"
             VALUE "OriginalFilename", "capitals.exe" "\0"
             VALUE "ProductName", "capitals" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
