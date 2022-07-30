@@ -46,33 +46,49 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     this._assets,
     this._palette,
     this._itemsLogic,
-  ) : super(GameState.empty);
+  ) : super(GameState.empty) {
+    on<OnStartGameEvent>(_onStartGame);
+    on<OnResetGameEvent>(_onReset);
+    on<OnGuessEvent>(_onGuess);
+  }
 
-  Future<GameState> _onStartGame() async {
+  Future<void> _onStartGame(
+    OnStartGameEvent event,
+    Emitter<GameState> emit,
+  ) async {
     var resultState = state;
     try {
       var countries = await _api.fetchCountries();
       countries = _countryWithImages(countries);
       countries.shuffle(_random);
       countries = countries.sublist(0, countryLimit);
-      resultState = _prepareItems(countries);
+      resultState = _prepareItems(resultState, countries);
     } catch (e) {
       // TODO handle error
       print(e);
     }
     await _updatePalette();
-    return resultState;
+    emit(resultState);
   }
 
-  GameState _onReset() {
-    emit(_updateScore(0));
-    emit(_updateTopScore(1));
+  Future<void> _onReset(
+    OnResetGameEvent event,
+    Emitter<GameState> emit,
+  ) async {
     _itemsLogic.reset();
-    return _prepareItems(
-        _itemsLogic.state.items.map((e) => e.original).toList());
+    final newState = _prepareItems(
+      state.copyWith(score: 0),
+      _itemsLogic.state.items.map((e) => e.original).toList(),
+    );
+    emit(newState);
   }
 
-  Future<GameState> _onGuess(int index, bool isTrue) async {
+  Future<void> _onGuess(
+    OnGuessEvent event,
+    Emitter<GameState> emit,
+  ) async {
+    final index = event.index;
+    final isTrue = event.isTrue;
     final isActuallyTrue = _itemsLogic.state.isCurrentTrue;
     var scoreUpdate = 0;
     if (isTrue && isActuallyTrue) {
@@ -84,28 +100,30 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     if (isTrue && !isActuallyTrue || !isTrue && isActuallyTrue) {
       scoreUpdate = _fail;
     }
-    final resultState = _updateScore(state.score + scoreUpdate);
+    final resultState = _updateScore(state, state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
     if (!_itemsLogic.state.isCompleted) {
       await _updatePalette();
     }
-    return resultState;
+    emit(resultState);
   }
 
   Future<void> _updatePalette() => _palette.updatePalette(
       _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
 
-  GameState _updateScore(int score) => state.copyWith(score: score);
+  GameState _updateScore(GameState state, int score) =>
+      state.copyWith(score: score);
 
-  GameState _updateTopScore(int topScore) => state.copyWith(topScore: topScore);
+  GameState _updateTopScore(GameState state, int topScore) =>
+      state.copyWith(topScore: topScore);
 
-  GameState _prepareItems(List<Country> countries) {
+  GameState _prepareItems(GameState state, List<Country> countries) {
     _itemsLogic.updateItems(countries);
     final originals = _itemsLogic.state.originalsLength;
     final fakes = _itemsLogic.state.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;
-    return _updateTopScore(topScore);
+    return _updateTopScore(state, topScore);
   }
 
   List<Country> _countryWithImages(List<Country> countries) => countries
@@ -122,17 +140,6 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       })
       .where((element) => element.index != -1)
       .toList();
-
-  @override
-  Stream<GameState> mapEventToState(GameEvent event) async* {
-    if (event is OnStartGameEvent) {
-      yield await _onStartGame();
-    } else if (event is OnResetGameEvent) {
-      yield _onReset();
-    } else if (event is OnGuessEvent) {
-      yield await _onGuess(event.index, event.isTrue);
-    }
-  }
 
   @override
   void onTransition(Transition<GameEvent, GameState> transition) {
