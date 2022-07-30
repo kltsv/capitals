@@ -15,11 +15,11 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  TCardController _cardsController = TCardController();
+class HomePageState extends State<HomePage> {
+  final _cardsController = TCardController();
 
   @override
   void initState() {
@@ -28,8 +28,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onInit() async {
-    await context.read<Assets>().load();
-    context.read<GameLogic>().add(const OnStartGameEvent());
+    final assets = context.read<Assets>();
+    final gameLogic = context.read<GameLogic>();
+    await assets.load();
+    gameLogic.add(const OnStartGameEvent());
   }
 
   @override
@@ -48,15 +50,15 @@ class _HomePageState extends State<HomePage> {
           child: Selector<ItemsState, bool>(
             builder: (context, isCompleted, _) => Stack(
               children: [
-                Align(
+                const Align(
                   alignment: Alignment.bottomCenter,
                   child: _ItemsProgress(),
                 ),
-                Align(
+                const Align(
                   alignment: Alignment.bottomCenter,
                   child: _ScoreProgress(),
                 ),
-                _ResultOrLoading(),
+                const _ResultOrLoading(),
                 if (!isCompleted)
                   CenterLandscape(
                     child: LayoutBuilder(
@@ -71,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12)
                                 .copyWith(top: 12.0),
-                            child: _Headers(),
+                            child: const _Headers(),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -81,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.all(12.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Controls(
                               onAnswer: (isTrue) => _cardsController.forward(
                                 direction: isTrue
@@ -158,7 +160,7 @@ class _Headers extends StatelessWidget {
         }
         return Headers(
           title: 'Is it ${state.current.capital}?',
-          subtitle: '${state.current.country}',
+          subtitle: state.current.country,
         );
       },
     );
@@ -205,7 +207,7 @@ class _ScoreProgress extends StatelessWidget {
         return ProgressWave(
           color: model.color.withOpacity(0.6),
           progress: model.progress,
-          duration: Duration(seconds: 15),
+          duration: const Duration(seconds: 15),
         );
       },
     );
@@ -224,7 +226,7 @@ class _ItemsProgress extends StatelessWidget {
         return ProgressWave(
           color: model.color.withOpacity(0.6),
           progress: model.progress,
-          duration: Duration(seconds: 15),
+          duration: const Duration(seconds: 15),
         );
       },
     );

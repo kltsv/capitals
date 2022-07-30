@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bloc/bloc.dart';
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
+import 'package:capitals/logger.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'models.dart';
 import 'palette.dart';
@@ -63,9 +64,9 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       countries.shuffle(_random);
       countries = countries.sublist(0, countryLimit);
       resultState = _prepareItems(resultState, countries);
-    } catch (e) {
+    } catch (e, s) {
       // TODO handle error
-      print(e);
+      logger.severe(e, s);
     }
     await _updatePalette();
     emit(resultState);
@@ -144,9 +145,11 @@ class GameLogic extends Bloc<GameEvent, GameState> {
   @override
   void onTransition(Transition<GameEvent, GameState> transition) {
     super.onTransition(transition);
-    print('Bloc: ${transition.event.runtimeType}:'
-        ' ${transition.currentState.score}/${transition.currentState.topScore} '
-        '-> ${transition.nextState.score}/${transition.currentState.topScore}');
+    logger.fine(
+      'Bloc: ${transition.event.runtimeType}:'
+      ' ${transition.currentState.score}/${transition.currentState.topScore} '
+      '-> ${transition.nextState.score}/${transition.currentState.topScore}',
+    );
   }
 }
 

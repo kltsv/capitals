@@ -84,7 +84,7 @@ class CapitalCard extends StatelessWidget {
           children: [
             Positioned.fill(
               child: AnimatedOpacity(
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 opacity: frame != null ? 1 : 0,
                 child: Card(
                   elevation: 8.0,
@@ -151,12 +151,12 @@ class Wave extends StatelessWidget {
         ],
         durations: [duration.inMilliseconds],
         heightPercentages: [0.0],
-        blur: MaskFilter.blur(BlurStyle.solid, 5),
+        blur: const MaskFilter.blur(BlurStyle.solid, 5),
         gradientBegin: Alignment.bottomCenter,
         gradientEnd: Alignment.topCenter,
       ),
       waveAmplitude: 0,
-      size: Size(
+      size: const Size(
         double.infinity,
         double.infinity,
       ),
@@ -273,13 +273,13 @@ class CenterLandscape extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Row(
       children: [
-        if (isLandscape) Spacer(flex: 1),
+        if (isLandscape) const Spacer(flex: 1),
         if (child != null)
           Flexible(
             flex: 2,
             child: child,
           ),
-        if (isLandscape) Spacer(flex: 1),
+        if (isLandscape) const Spacer(flex: 1),
       ],
     );
   }
