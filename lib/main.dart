@@ -5,5 +5,5 @@ import 'ui/app.dart';
 
 void main() {
   setup();
-  runApp(App());
+  runApp(const App());
 }

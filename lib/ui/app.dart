@@ -7,14 +7,16 @@ import 'package:provider/provider.dart';
 import 'components.dart';
 import 'home_page.dart';
 
-final _appName = '${GameLogic.countryLimit} Capitals';
+const _appName = '${GameLogic.countryLimit} Capitals';
 
 class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
-  _AppState createState() => _AppState();
+  AppState createState() => AppState();
 }
 
-class _AppState extends State<App> {
+class AppState extends State<App> {
   var _dark = false;
 
   @override
@@ -45,7 +47,7 @@ class _AppState extends State<App> {
           ),
           theme:
               ThemeData(brightness: _dark ? Brightness.dark : Brightness.light),
-          home: HomePage(),
+          home: const HomePage(),
         ),
       );
 }

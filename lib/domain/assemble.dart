@@ -21,7 +21,7 @@ abstract class AssembleModule {
   Random provideRandom() => Random();
 
   @injectable
-  Api providerApi() => Api();
+  Api providerApi() => const Api();
 
   @lazySingleton
   Assets providerAssets() => Assets();

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:palette_generator/palette_generator.dart';
 
 import 'models.dart';
@@ -28,7 +28,7 @@ class PaletteState {
 
   ColorPair get colors => currentPalette != null
       ? _buildColors(currentPalette)
-      : ColorPair(_defaultColor, _defaultColor);
+      : const ColorPair(_defaultColor, _defaultColor);
 
   PaletteState copyWith({
     PaletteGenerator? currentPalette,
@@ -40,8 +40,8 @@ class PaletteState {
       );
 }
 
-class PaletteLogic extends Cubit<PaletteState>{
-  PaletteLogic() : super(PaletteState());
+class PaletteLogic extends Cubit<PaletteState> {
+  PaletteLogic() : super(const PaletteState());
 
   ColorPair get colors => state.colors;
 
@@ -49,9 +49,9 @@ class PaletteLogic extends Cubit<PaletteState>{
     final crt = state.currentPalette == null
         ? await PaletteGenerator.fromImageProvider(current)
         : state.nextPalette;
-    final _next =
+    final nextGenerator =
         next != null ? await PaletteGenerator.fromImageProvider(next) : null;
-    _updatePalettes(crt, _next);
+    _updatePalettes(crt, nextGenerator);
   }
 
   void _updatePalettes(PaletteGenerator? current, PaletteGenerator? next) =>

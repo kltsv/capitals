@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bloc/bloc.dart';
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/items.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'models.dart';
 import 'palette.dart';
