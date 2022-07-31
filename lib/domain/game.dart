@@ -72,12 +72,13 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       // для которых есть картинки
       resultState = resultState.copyWith(countries: [...countries]);
       final limitedCountries = _getCountriesForNewGame(countries);
+      _itemsLogic.updateItems(limitedCountries);
       resultState = _prepareItems(resultState, limitedCountries);
     } catch (e, s) {
       // TODO handle error
       logger.severe(e, s);
     }
-    await _updatePalette();
+    await _updatePalette(_itemsLogic.state);
     emit(resultState);
   }
 
@@ -87,6 +88,7 @@ class GameLogic extends Bloc<GameEvent, GameState> {
   ) async {
     _itemsLogic.reset();
     final limitedCountries = _getCountriesForNewGame(state.countries);
+    _itemsLogic.updateItems(limitedCountries);
     final newState = _prepareItems(
       state.copyWith(score: 0),
       limitedCountries,
@@ -114,8 +116,9 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     final resultState = _updateScore(state, state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
-    if (!_itemsLogic.state.isCompleted) {
-      await _updatePalette();
+    final itemsState = _itemsLogic.state;
+    if (!itemsState.isCompleted) {
+      await _updatePalette(itemsState);
     }
     emit(resultState);
   }
@@ -127,8 +130,8 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     return copyToShuffle.sublist(0, countryLimit);
   }
 
-  Future<void> _updatePalette() => _palette.updatePalette(
-      _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
+  Future<void> _updatePalette(ItemsState state) =>
+      _palette.updatePalette(state.current.image, state.next?.image);
 
   GameState _updateScore(GameState state, int score) =>
       state.copyWith(score: score);
@@ -137,7 +140,6 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       state.copyWith(topScore: topScore);
 
   GameState _prepareItems(GameState state, List<Country> countries) {
-    _itemsLogic.updateItems(countries);
     final originals = _itemsLogic.state.originalsLength;
     final fakes = _itemsLogic.state.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;
