@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-import '../domain/models.dart';
+import '../domain/models/country.dart';
 
 class Api {
   const Api();

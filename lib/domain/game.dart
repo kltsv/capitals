@@ -6,7 +6,8 @@ import 'package:capitals/domain/items.dart';
 import 'package:capitals/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'models.dart';
+import 'models/country.dart';
+import 'models/game_item.dart';
 import 'palette.dart';
 
 class GameState {

@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'models.dart';
+import 'models/country.dart';
+import 'models/game_item.dart';
 
 class ItemsState {
   static const empty = ItemsState(0, []);
