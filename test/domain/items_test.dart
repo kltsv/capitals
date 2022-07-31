@@ -1,7 +1,8 @@
-import 'package:capitals/domain/models/country.dart';
 import 'package:capitals/domain/models/game_item.dart';
 import 'package:capitals/domain/states/items_state.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_data/countries.dart';
 
 void main() {
   group('Single GameItem', () {
@@ -84,8 +85,3 @@ void main() {
     });
   });
 }
-
-const russia = Country('Russia', 'Moscow');
-const italy = Country('Italy', 'Rome');
-const usa = Country('USA', 'Washington D.C.');
-const france = Country('France', 'Paris');
