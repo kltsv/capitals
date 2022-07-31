@@ -35,9 +35,17 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     this._itemsLogic, {
     this.countryLimit = GameLogic.defaultCountryLimit,
   }) : super(GameState.empty) {
-    on<OnStartGameEvent>(_onStartGame);
-    on<OnResetGameEvent>(_onReset);
-    on<OnGuessEvent>(_onGuess);
+    on<GameEvent>(_onGameEvent);
+  }
+
+  Future<void> _onGameEvent(GameEvent event, Emitter<GameState> emit) async {
+    if (event is OnStartGameEvent) {
+      await _onStartGame(event, emit);
+    } else if (event is OnGuessEvent) {
+      await _onGuess(event, emit);
+    } else if (event is OnResetGameEvent) {
+      await _onReset(event, emit);
+    }
   }
 
   Future<void> _onStartGame(
@@ -93,14 +101,13 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     if (isTrue && !isActuallyTrue || !isTrue && isActuallyTrue) {
       scoreUpdate = _fail;
     }
-    final resultState = _updateScore(state, state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
     final itemsState = _itemsLogic.state;
     if (!itemsState.isCompleted) {
       await _updatePalette(itemsState);
     }
-    emit(resultState);
+    emit(_updateScore(state, state.score + scoreUpdate));
   }
 
   List<Country> _getCountriesForNewGame(List<Country> countries) {

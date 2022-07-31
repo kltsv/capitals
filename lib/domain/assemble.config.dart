@@ -4,6 +4,7 @@
 // InjectableConfigGenerator
 // **************************************************************************
 
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:math' as _i5;
 
 import 'package:get_it/get_it.dart' as _i1;
