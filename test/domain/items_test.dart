@@ -86,5 +86,5 @@ void main() {
 
 const russia = Country('Russia', 'Moscow');
 const italy = Country('Italy', 'Rome');
-const usa = Country('USA', 'Washington');
+const usa = Country('USA', 'Washington D.C.');
 const france = Country('France', 'Paris');
