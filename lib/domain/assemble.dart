@@ -33,8 +33,13 @@ abstract class AssembleModule {
   ItemsLogic provideItemsLogic(Random random) => ItemsLogic(random);
 
   @lazySingleton
-  GameLogic provideGameLogic(Random random, Api api, Assets assets,
-          PaletteLogic palette, ItemsLogic itemsLogic) =>
+  GameLogic provideGameLogic(
+    Random random,
+    Api api,
+    Assets assets,
+    PaletteLogic palette,
+    ItemsLogic itemsLogic,
+  ) =>
       GameLogic(random, api, assets, palette, itemsLogic);
 }
 

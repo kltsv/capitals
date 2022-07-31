@@ -36,7 +36,7 @@ class GameLogic extends Bloc<GameEvent, GameState> {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
-  static const countryLimit = 30;
+  static const defaultCountryLimit = 30;
 
   final Random _random;
   final Api _api;
@@ -44,13 +44,17 @@ class GameLogic extends Bloc<GameEvent, GameState> {
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
 
+  // Ограничение на количество стран, участвующих в игре
+  final int countryLimit;
+
   GameLogic(
     this._random,
     this._api,
     this._assets,
     this._palette,
-    this._itemsLogic,
-  ) : super(GameState.empty) {
+    this._itemsLogic, {
+    this.countryLimit = GameLogic.defaultCountryLimit,
+  }) : super(GameState.empty) {
     on<OnStartGameEvent>(_onStartGame);
     on<OnResetGameEvent>(_onReset);
     on<OnGuessEvent>(_onGuess);
