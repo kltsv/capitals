@@ -10,20 +10,23 @@ import 'models.dart';
 import 'palette.dart';
 
 class GameState {
-  static const GameState empty = GameState(0, 1);
+  static const GameState empty = GameState([], 0, 1);
 
+  final List<Country> countries;
   final int score;
   final int topScore;
 
-  const GameState(this.score, this.topScore);
+  const GameState(this.countries, this.score, this.topScore);
 
   double get progress => max(0, score) / topScore;
 
   GameState copyWith({
+    List<Country>? countries,
     int? score,
     int? topScore,
   }) =>
       GameState(
+        countries ?? this.countries,
         score ?? this.score,
         topScore ?? this.topScore,
       );
@@ -61,9 +64,11 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     try {
       var countries = await _api.fetchCountries();
       countries = _countryWithImages(countries);
-      countries.shuffle(_random);
-      countries = countries.sublist(0, countryLimit);
-      resultState = _prepareItems(resultState, countries);
+      // Сохраняем в состояние все доступные страны,
+      // для которых есть картинки
+      resultState = resultState.copyWith(countries: [...countries]);
+      final limitedCountries = _getCountriesForNewGame(countries);
+      resultState = _prepareItems(resultState, limitedCountries);
     } catch (e, s) {
       // TODO handle error
       logger.severe(e, s);
@@ -77,9 +82,10 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     Emitter<GameState> emit,
   ) async {
     _itemsLogic.reset();
+    final limitedCountries = _getCountriesForNewGame(state.countries);
     final newState = _prepareItems(
       state.copyWith(score: 0),
-      _itemsLogic.state.items.map((e) => e.original).toList(),
+      limitedCountries,
     );
     emit(newState);
   }
@@ -108,6 +114,13 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       await _updatePalette();
     }
     emit(resultState);
+  }
+
+  List<Country> _getCountriesForNewGame(List<Country> countries) {
+    final copyToShuffle = [...countries];
+    copyToShuffle.shuffle(_random);
+    // выбираем только органиченное число стран для игры
+    return copyToShuffle.sublist(0, countryLimit);
   }
 
   Future<void> _updatePalette() => _palette.updatePalette(
