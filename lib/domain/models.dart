@@ -21,6 +21,23 @@ class Country {
   });
 
   ImageProvider get image => NetworkImage('${imageUrls[index]}?w=600');
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Country &&
+          runtimeType == other.runtimeType &&
+          name == other.name &&
+          capital == other.capital &&
+          imageUrls == other.imageUrls &&
+          index == other.index;
+
+  @override
+  int get hashCode =>
+      name.hashCode ^ capital.hashCode ^ imageUrls.hashCode ^ index.hashCode;
+
+  @override
+  String toString() => '$name-$capital';
 }
 
 class GameItem {
@@ -34,6 +51,20 @@ class GameItem {
   String get capital => fake?.capital ?? original.capital;
 
   ImageProvider get image => original.image;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GameItem &&
+          runtimeType == other.runtimeType &&
+          original == other.original &&
+          fake == other.fake;
+
+  @override
+  int get hashCode => original.hashCode ^ fake.hashCode;
+
+  @override
+  String toString() => '$original${fake != null ? ' (fake: $fake)' : ''}';
 }
 
 class ColorPair {

@@ -17,6 +17,8 @@ class ItemsState {
   GameItem? get next =>
       ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
 
+  // Игра считается завершенной, когда индекс
+  // становится больше индекса последнего элемента
   bool get isCompleted => items.isNotEmpty && currentIndex == items.length;
 
   bool get isEmpty => items.isEmpty;
