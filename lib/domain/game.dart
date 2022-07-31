@@ -6,34 +6,17 @@ import 'package:capitals/domain/items.dart';
 import 'package:capitals/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'models.dart';
+import 'models/country.dart';
+import 'models/game_item.dart';
 import 'palette.dart';
-
-class GameState {
-  static const GameState empty = GameState(0, 1);
-
-  final int score;
-  final int topScore;
-
-  const GameState(this.score, this.topScore);
-
-  double get progress => max(0, score) / topScore;
-
-  GameState copyWith({
-    int? score,
-    int? topScore,
-  }) =>
-      GameState(
-        score ?? this.score,
-        topScore ?? this.topScore,
-      );
-}
+import 'states/game_state.dart';
+import 'states/items_state.dart';
 
 class GameLogic extends Bloc<GameEvent, GameState> {
   static const _successGuess = 3;
   static const _successFake = 1;
   static const _fail = -1;
-  static const countryLimit = 30;
+  static const defaultCountryLimit = 30;
 
   final Random _random;
   final Api _api;
@@ -41,13 +24,17 @@ class GameLogic extends Bloc<GameEvent, GameState> {
   final PaletteLogic _palette;
   final ItemsLogic _itemsLogic;
 
+  // Ограничение на количество стран, участвующих в игре
+  final int countryLimit;
+
   GameLogic(
     this._random,
     this._api,
     this._assets,
     this._palette,
-    this._itemsLogic,
-  ) : super(GameState.empty) {
+    this._itemsLogic, {
+    this.countryLimit = GameLogic.defaultCountryLimit,
+  }) : super(GameState.empty) {
     on<OnStartGameEvent>(_onStartGame);
     on<OnResetGameEvent>(_onReset);
     on<OnGuessEvent>(_onGuess);
@@ -61,14 +48,17 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     try {
       var countries = await _api.fetchCountries();
       countries = _countryWithImages(countries);
-      countries.shuffle(_random);
-      countries = countries.sublist(0, countryLimit);
-      resultState = _prepareItems(resultState, countries);
+      // Сохраняем в состояние все доступные страны,
+      // для которых есть картинки
+      resultState = resultState.copyWith(countries: [...countries]);
+      final limitedCountries = _getCountriesForNewGame(countries);
+      _itemsLogic.updateItems(limitedCountries);
+      resultState = _prepareItems(resultState, limitedCountries);
     } catch (e, s) {
       // TODO handle error
       logger.severe(e, s);
     }
-    await _updatePalette();
+    await _updatePalette(_itemsLogic.state);
     emit(resultState);
   }
 
@@ -77,9 +67,11 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     Emitter<GameState> emit,
   ) async {
     _itemsLogic.reset();
+    final limitedCountries = _getCountriesForNewGame(state.countries);
+    _itemsLogic.updateItems(limitedCountries);
     final newState = _prepareItems(
       state.copyWith(score: 0),
-      _itemsLogic.state.items.map((e) => e.original).toList(),
+      limitedCountries,
     );
     emit(newState);
   }
@@ -104,14 +96,22 @@ class GameLogic extends Bloc<GameEvent, GameState> {
     final resultState = _updateScore(state, state.score + scoreUpdate);
     _itemsLogic.updateCurrent(index);
 
-    if (!_itemsLogic.state.isCompleted) {
-      await _updatePalette();
+    final itemsState = _itemsLogic.state;
+    if (!itemsState.isCompleted) {
+      await _updatePalette(itemsState);
     }
     emit(resultState);
   }
 
-  Future<void> _updatePalette() => _palette.updatePalette(
-      _itemsLogic.state.current.image, _itemsLogic.state.next?.image);
+  List<Country> _getCountriesForNewGame(List<Country> countries) {
+    final copyToShuffle = [...countries];
+    copyToShuffle.shuffle(_random);
+    // выбираем только органиченное число стран для игры
+    return copyToShuffle.sublist(0, countryLimit);
+  }
+
+  Future<void> _updatePalette(ItemsState state) =>
+      _palette.updatePalette(state.current.image, state.next?.image);
 
   GameState _updateScore(GameState state, int score) =>
       state.copyWith(score: score);
@@ -120,7 +120,6 @@ class GameLogic extends Bloc<GameEvent, GameState> {
       state.copyWith(topScore: topScore);
 
   GameState _prepareItems(GameState state, List<Country> countries) {
-    _itemsLogic.updateItems(countries);
     final originals = _itemsLogic.state.originalsLength;
     final fakes = _itemsLogic.state.fakeLength;
     final topScore = originals * _successGuess + fakes * _successFake;

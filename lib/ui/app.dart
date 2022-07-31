@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'components.dart';
 import 'home_page.dart';
 
-const _appName = '${GameLogic.countryLimit} Capitals';
+const _appName = '${GameLogic.defaultCountryLimit} Capitals';
 
 class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);

@@ -2,43 +2,9 @@ import 'dart:math';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'models.dart';
-
-class ItemsState {
-  static const empty = ItemsState(0, []);
-
-  final int currentIndex;
-  final List<GameItem> items;
-
-  const ItemsState(this.currentIndex, this.items);
-
-  GameItem get current => items[currentIndex];
-
-  GameItem? get next =>
-      ((currentIndex + 1) < items.length) ? items[currentIndex + 1] : null;
-
-  bool get isCompleted => items.isNotEmpty && currentIndex == items.length;
-
-  bool get isEmpty => items.isEmpty;
-
-  bool get isCurrentTrue => current.fake == null;
-
-  int get originalsLength =>
-      items.where((element) => element.fake == null).length;
-
-  int get fakeLength => items.length - originalsLength;
-
-  double get progress => isEmpty ? 0 : currentIndex / items.length;
-
-  ItemsState copyWith({
-    int? currentIndex,
-    List<GameItem>? items,
-  }) =>
-      ItemsState(
-        currentIndex ?? this.currentIndex,
-        items ?? this.items,
-      );
-}
+import 'models/country.dart';
+import 'models/game_item.dart';
+import 'states/items_state.dart';
 
 class ItemsLogic extends Cubit<ItemsState> {
   final Random _random;

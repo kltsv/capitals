@@ -21,11 +21,13 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
     {String? environment, _i2.EnvironmentFilter? environmentFilter}) {
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final assembleModule = _$AssembleModule();
-  gh.factory<_i3.Api>(() => assembleModule.providerApi());
-  gh.lazySingleton<_i3.Assets>(() => assembleModule.providerAssets());
+  gh.factory<_i3.Api>(() => assembleModule.provideApi());
+  gh.factory<_i3.JsonLoader>(() => assembleModule.provideJsonLoader());
   gh.lazySingleton<_i4.PaletteLogic>(
       () => assembleModule.providePaletteLogic());
   gh.factory<_i5.Random>(() => assembleModule.provideRandom());
+  gh.lazySingleton<_i3.Assets>(
+      () => assembleModule.provideAssets(get<_i3.JsonLoader>()));
   gh.lazySingleton<_i6.ItemsLogic>(
       () => assembleModule.provideItemsLogic(get<_i5.Random>()));
   gh.lazySingleton<_i7.GameLogic>(() => assembleModule.provideGameLogic(

@@ -2,13 +2,15 @@ import 'dart:math';
 
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
-import 'package:capitals/domain/items.dart';
-import 'package:capitals/domain/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:tcard/tcard.dart';
 
+import '../domain/models/color_pair.dart';
+import '../domain/models/game_item.dart';
+import '../domain/states/game_state.dart';
+import '../domain/states/items_state.dart';
 import 'components.dart';
 
 class HomePage extends StatefulWidget {
