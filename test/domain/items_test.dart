@@ -1,6 +1,6 @@
-import 'package:capitals/domain/items.dart';
 import 'package:capitals/domain/models/country.dart';
 import 'package:capitals/domain/models/game_item.dart';
+import 'package:capitals/domain/states/items_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

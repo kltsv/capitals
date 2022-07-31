@@ -9,29 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'models/country.dart';
 import 'models/game_item.dart';
 import 'palette.dart';
-
-class GameState {
-  static const GameState empty = GameState([], 0, 1);
-
-  final List<Country> countries;
-  final int score;
-  final int topScore;
-
-  const GameState(this.countries, this.score, this.topScore);
-
-  double get progress => max(0, score) / topScore;
-
-  GameState copyWith({
-    List<Country>? countries,
-    int? score,
-    int? topScore,
-  }) =>
-      GameState(
-        countries ?? this.countries,
-        score ?? this.score,
-        topScore ?? this.topScore,
-      );
-}
+import 'states/game_state.dart';
+import 'states/items_state.dart';
 
 class GameLogic extends Bloc<GameEvent, GameState> {
   static const _successGuess = 3;
