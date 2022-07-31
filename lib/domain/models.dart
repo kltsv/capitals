@@ -1,9 +1,16 @@
 import 'package:flutter/widgets.dart';
 
 class Country {
+  /// Название страны
   final String name;
+
+  /// Название столицы
   final String capital;
+
+  /// Список ссылок на картинки со страной
   final List<String> imageUrls;
+
+  /// Индекс картинки, которую нужно показать
   final int index;
 
   const Country(
