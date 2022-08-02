@@ -11,7 +11,7 @@ import '../domain/models/color_pair.dart';
 import '../domain/models/game_item.dart';
 import '../domain/states/game_state.dart';
 import '../domain/states/items_state.dart';
-import 'components.dart';
+import 'components/components.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
