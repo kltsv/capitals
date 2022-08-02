@@ -13,38 +13,7 @@ import 'assemble.config.dart';
 final getIt = GetIt.I;
 
 @InjectableInit()
-void setup() => $initGetIt(getIt);
-
-@module
-abstract class AssembleModule {
-  @injectable
-  Random provideRandom() => Random();
-
-  @injectable
-  Api provideApi() => const Api();
-
-  @injectable
-  JsonLoader provideJsonLoader() => const AssetsJsonLoader();
-
-  @lazySingleton
-  Assets provideAssets(JsonLoader loader) => Assets(loader);
-
-  @lazySingleton
-  PaletteLogic providePaletteLogic() => PaletteLogic();
-
-  @lazySingleton
-  ItemsLogic provideItemsLogic(Random random) => ItemsLogic(random);
-
-  @lazySingleton
-  GameLogic provideGameLogic(
-    Random random,
-    Api api,
-    Assets assets,
-    PaletteLogic palette,
-    ItemsLogic itemsLogic,
-  ) =>
-      GameLogic(random, api, assets, palette, itemsLogic);
-}
+void setup() => $initGetIt(getIt, environment: Environment.prod);
 
 class Assemble {
   Random get random => getIt.get<Random>();

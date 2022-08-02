@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -50,4 +51,10 @@ class AssetsJsonLoader implements JsonLoader {
     final raw = await rootBundle.loadString('assets/pictures.json');
     return jsonDecode(raw) as Map<String, dynamic>;
   }
+}
+
+class RandomGenerator {
+  final Random random;
+
+  RandomGenerator([Random? random]) : random = random ?? Random();
 }

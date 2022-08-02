@@ -40,13 +40,11 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<ColorPair>(
-        builder: (context, colors, child) {
-          return GradientBackground(
-            startColor: colors.main.withOpacity(0.3),
-            endColor: colors.second.withOpacity(0.3),
-            child: child,
-          );
-        },
+        builder: (context, colors, child) => GradientBackground(
+          startColor: colors.main.withOpacity(0.3),
+          endColor: colors.second.withOpacity(0.3),
+          child: child,
+        ),
         child: SafeArea(
           bottom: false,
           child: Selector<ItemsState, bool>(
