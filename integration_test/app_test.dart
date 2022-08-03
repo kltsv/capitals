@@ -39,7 +39,7 @@ void main() {
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     // Проверяем наличие всех необходимых виджетов на экране
     expect(find.byKey(const ValueKey('Luanda')), findsOneWidget);
@@ -67,7 +67,7 @@ void main() {
     );
     expect(itemsProgress, findsOneWidget);
 
-    await Future.delayed(const Duration(seconds: 3));
+    await waitSec(3);
   });
 
   testWidgets('When drag cards then current item is updated', (tester) async {
@@ -75,7 +75,7 @@ void main() {
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final firstCard = find.byKey(const ValueKey('Luanda'));
     expect(firstCard, findsOneWidget);
@@ -96,7 +96,7 @@ void main() {
     await tester.timedDrag(
         firstCard, const Offset(100.0, 0.0), const Duration(seconds: 1));
     // И итерируемся по кадрам, чтобы виджет улетел
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     // Проверяем, что старой карточки уже нет, а виджеты обновились
     expect(firstCard, findsNothing);
@@ -125,7 +125,7 @@ void main() {
 
     await tester.timedDrag(
         secondCard, const Offset(-100.0, 0.0), const Duration(seconds: 1));
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final thirdCard = find.byKey(const ValueKey('Tunis'));
     expect(firstCard, findsNothing);
@@ -156,9 +156,7 @@ void main() {
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
-    await tester.pumpTimes(50);
-
-    await Future.delayed(const Duration(seconds: 3));
+    await tester.pumpAndWait(waitSeconds: 3);
   });
 
   testWidgets('When tap True or False then current item is updated',
@@ -171,7 +169,7 @@ void main() {
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final trueButton = find.widgetWithText(InkResponse, 'True');
     final falseButton = find.widgetWithText(InkResponse, 'False');
@@ -192,7 +190,7 @@ void main() {
     expect(itemsProgress, findsOneWidget);
 
     await tester.tap(falseButton);
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final secondCard = find.byKey(const ValueKey('Ankara'));
     expect(firstCard, findsNothing);
@@ -218,7 +216,7 @@ void main() {
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
     await tester.tap(trueButton);
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final thirdCard = find.byKey(const ValueKey('Tunis'));
     expect(firstCard, findsNothing);
@@ -244,9 +242,7 @@ void main() {
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
-    await tester.pumpTimes(50);
-
-    await Future.delayed(const Duration(seconds: 3));
+    await tester.pumpAndWait(waitSeconds: 3);
   });
 
   testWidgets('When full game completed then final score is shown',
@@ -258,7 +254,7 @@ void main() {
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     final random = Random();
 
@@ -282,7 +278,7 @@ void main() {
         await tester.tap(
             find.widgetWithText(InkResponse, guessTrue ? 'True' : 'False'));
       }
-      await tester.pumpTimes(50);
+      await tester.pumpTimes(60);
 
       expect(card, findsWidgets);
       expect(find.byType(Headers), findsOneWidget);
@@ -296,7 +292,7 @@ void main() {
 
     // Угадываем последнюю карточку
     await tester.tap(find.widgetWithText(InkResponse, 'True'));
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     expect(find.byType(CapitalCard), findsNothing);
     expect(find.byType(Headers), findsNothing);
@@ -307,11 +303,11 @@ void main() {
     expect(find.byKey(Keys.scoreResult), findsOneWidget);
     expect(find.byKey(Keys.maxResult), findsOneWidget);
 
-    await Future.delayed(const Duration(seconds: 3));
+    await waitSec(3);
 
     // Тапаем по виджету завершения и проверяем, что игра началась заново
     await tester.tap(complete);
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     expect(complete, findsNothing);
     expect(find.byType(CapitalCard), findsWidgets);
@@ -320,32 +316,32 @@ void main() {
     expect(find.widgetWithIcon(IconButton, Icons.nightlight_round),
         findsOneWidget);
 
-    await Future.delayed(const Duration(seconds: 3));
+    await waitSec(3);
   });
 
   testWidgets('Light/dark mode switching', (tester) async {
     app.main();
 
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
 
     Element context() => tester.element(find.byType(Scaffold));
 
     expect(Theme.of(context()).brightness, Brightness.light);
 
     await tester.tap(find.widgetWithIcon(IconButton, Icons.nightlight_round));
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
     await Future.delayed(const Duration(seconds: 1));
 
     expect(Theme.of(context()).brightness, Brightness.dark);
 
     await tester.tap(find.widgetWithIcon(IconButton, Icons.wb_sunny_outlined));
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
     await Future.delayed(const Duration(seconds: 1));
 
     expect(Theme.of(context()).brightness, Brightness.light);
 
     await tester.tap(find.widgetWithIcon(IconButton, Icons.nightlight_round));
-    await tester.pumpTimes(50);
+    await tester.pumpTimes(60);
     await Future.delayed(const Duration(seconds: 1));
 
     expect(Theme.of(context()).brightness, Brightness.dark);
@@ -354,7 +350,22 @@ void main() {
   });
 }
 
+Future<void> waitSec(int seconds) => Future.delayed(Duration(seconds: seconds));
+
 extension TesterExt on WidgetTester {
+  Future<void> pumpAndWait({
+    int pumpTimes = 60,
+    int? waitSeconds,
+    Duration? pumpDuration,
+  }) async {
+    for (var i = 0; i < pumpTimes; i++) {
+      await pump(pumpDuration);
+    }
+    if (waitSeconds != null) {
+      waitSec(waitSeconds);
+    }
+  }
+
   Future<void> pumpTimes(
     int times, [
     Duration? duration,
