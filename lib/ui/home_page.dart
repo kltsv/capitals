@@ -75,7 +75,7 @@ class HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12)
                                 .copyWith(top: 12.0),
-                            child: const _Headers(),
+                            child: const CapitalHeaders(),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -150,8 +150,8 @@ class _Cards extends StatelessWidget {
   }
 }
 
-class _Headers extends StatelessWidget {
-  const _Headers({Key? key}) : super(key: key);
+class CapitalHeaders extends StatelessWidget {
+  const CapitalHeaders({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
