@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import 'components.dart';
+import 'components/theme_switch.dart';
 import 'home_page.dart';
 
 const _appName = '${GameLogic.defaultCountryLimit} Capitals';

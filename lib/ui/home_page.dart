@@ -11,7 +11,7 @@ import '../domain/models/color_pair.dart';
 import '../domain/models/game_item.dart';
 import '../domain/states/game_state.dart';
 import '../domain/states/items_state.dart';
-import 'components.dart';
+import 'components/components.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -75,7 +75,7 @@ class HomePageState extends State<HomePage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12)
                                 .copyWith(top: 12.0),
-                            child: const _Headers(),
+                            child: const CapitalHeaders(),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -150,8 +150,8 @@ class _Cards extends StatelessWidget {
   }
 }
 
-class _Headers extends StatelessWidget {
-  const _Headers({Key? key}) : super(key: key);
+class CapitalHeaders extends StatelessWidget {
+  const CapitalHeaders({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
