@@ -24,10 +24,8 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final dataSourceModule = _$DataSourceModule();
   final assembleModule = _$AssembleModule();
-  gh.factory<_i3.Api>(() => dataSourceModule.provideApi(),
-      registerFor: {_prod});
-  gh.factory<_i3.JsonLoader>(() => dataSourceModule.provideJsonLoader(),
-      registerFor: {_prod});
+  gh.factory<_i3.Api>(() => dataSourceModule.provideApi());
+  gh.factory<_i3.JsonLoader>(() => dataSourceModule.provideJsonLoader());
   gh.lazySingleton<_i4.PaletteLogic>(
       () => assembleModule.providePaletteLogic());
   gh.factory<_i3.RandomGenerator>(

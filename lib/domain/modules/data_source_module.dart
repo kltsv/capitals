@@ -7,11 +7,9 @@ abstract class DataSourceModule {
   @injectable
   RandomGenerator provideRandomGenerator() => RandomGenerator();
 
-  @prod
   @injectable
   Api provideApi() => const Api();
 
-  @prod
   @injectable
   JsonLoader provideJsonLoader() => const AssetsJsonLoader();
 }

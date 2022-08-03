@@ -8,13 +8,13 @@
 import 'package:capitals/data/data.dart' as _i3;
 import 'package:capitals/domain/game.dart' as _i6;
 import 'package:capitals/domain/items.dart' as _i5;
-import 'package:capitals/domain/modules/assemble_module.dart' as _i9;
+import 'package:capitals/domain/modules/assemble_module.dart' as _i8;
 import 'package:capitals/domain/modules/data_source_module.dart' as _i7;
 import 'package:capitals/domain/palette.dart' as _i4;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import 'test_assemble.dart' as _i8;
+import 'test_assemble.dart' as _i9;
 
 const String _prod = 'prod';
 const String _test = 'test';
@@ -25,16 +25,10 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
     {String? environment, _i2.EnvironmentFilter? environmentFilter}) {
   final gh = _i2.GetItHelper(get, environment, environmentFilter);
   final dataSourceModule = _$DataSourceModule();
-  final mockDataSourceModule = _$MockDataSourceModule();
   final assembleModule = _$AssembleModule();
-  gh.factory<_i3.Api>(() => dataSourceModule.provideApi(),
-      registerFor: {_prod});
-  gh.factory<_i3.Api>(() => mockDataSourceModule.provideApi(),
-      registerFor: {_test});
-  gh.factory<_i3.JsonLoader>(() => dataSourceModule.provideJsonLoader(),
-      registerFor: {_prod});
-  gh.factory<_i3.JsonLoader>(() => mockDataSourceModule.provideJsonLoader(),
-      registerFor: {_test});
+  final mockDataSourceModule = _$MockDataSourceModule();
+  gh.factory<_i3.Api>(() => dataSourceModule.provideApi());
+  gh.factory<_i3.JsonLoader>(() => dataSourceModule.provideJsonLoader());
   gh.lazySingleton<_i4.PaletteLogic>(
       () => assembleModule.providePaletteLogic());
   gh.factory<_i3.RandomGenerator>(
@@ -58,6 +52,6 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
 
 class _$DataSourceModule extends _i7.DataSourceModule {}
 
-class _$MockDataSourceModule extends _i8.MockDataSourceModule {}
+class _$AssembleModule extends _i8.AssembleModule {}
 
-class _$AssembleModule extends _i9.AssembleModule {}
+class _$MockDataSourceModule extends _i9.MockDataSourceModule {}
