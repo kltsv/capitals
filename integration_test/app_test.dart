@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:capitals/domain/assemble.dart';
 import 'package:capitals/keys.dart';
@@ -8,7 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:logging/logging.dart';
 
-import 'test_main.dart' as app;
+import 'test_main.dart' as test_app;
+import 'package:capitals/main.dart' as app;
 
 final testLogger = Logger('[Test]');
 
@@ -30,7 +32,7 @@ void main() {
   testWidgets(
       'When app started then items are loaded '
       'and appear on the screen', (tester) async {
-    app.main();
+    test_app.main();
 
     // Итерируемся по фреймам до тех пор,
     // пока в состоянии не появятся айтемы
@@ -69,7 +71,7 @@ void main() {
   });
 
   testWidgets('When drag cards then current item is updated', (tester) async {
-    app.main();
+    test_app.main();
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
@@ -165,7 +167,7 @@ void main() {
     // но проверяя тапы на кнопки True/False
     // и в другом порядке (сначала false, потом true)
 
-    app.main();
+    test_app.main();
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
@@ -243,6 +245,80 @@ void main() {
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
     await tester.pumpTimes(50);
+
+    await Future.delayed(const Duration(seconds: 3));
+  });
+
+  testWidgets('When full game completed then final score is shown',
+      (tester) async {
+    // Проходим полный флоу игры до экрана с результатами
+
+    // Запускаем полностью продовое окружение
+    app.main();
+    while (assemble.itemsLogic.state.items.isEmpty) {
+      await tester.pump();
+    }
+    await tester.pumpTimes(50);
+
+    final random = Random();
+
+    expect(find.byType(Headers), findsOneWidget);
+    expect(find.byType(Controls), findsOneWidget);
+
+    for (var i = 0; i < 29; i++) {
+      final shouldDrag = random.nextBool();
+      final guessTrue = random.nextBool();
+
+      final card = find.byType(CapitalCard);
+      if (shouldDrag) {
+        // Делаем свайп влево
+        await tester.timedDrag(
+          card.last,
+          Offset(guessTrue ? 100.0 : -100, 0.0),
+          const Duration(milliseconds: 200),
+        );
+        // И итерируемся по кадрам, чтобы виджет улетел
+      } else {
+        await tester.tap(
+            find.widgetWithText(InkResponse, guessTrue ? 'True' : 'False'));
+      }
+      await tester.pumpTimes(50);
+
+      expect(card, findsWidgets);
+      expect(find.byType(Headers), findsOneWidget);
+      expect(find.byType(Controls), findsOneWidget);
+      expect(find.widgetWithIcon(IconButton, Icons.nightlight_round),
+          findsOneWidget);
+
+      testLogger.fine(
+          '${assemble.itemsLogic.state.currentIndex}: ${assemble.itemsLogic.state.items.map((e) => e.original.capital)}');
+    }
+
+    // Угадываем последнюю карточку
+    await tester.tap(find.widgetWithText(InkResponse, 'True'));
+    await tester.pumpTimes(50);
+
+    expect(find.byType(CapitalCard), findsNothing);
+    expect(find.byType(Headers), findsNothing);
+    expect(find.byType(Controls), findsNothing);
+    final complete = find.byType(CompleteWidget);
+    expect(complete, findsOneWidget);
+    expect(find.text('Your result'), findsOneWidget);
+    expect(find.byKey(Keys.scoreResult), findsOneWidget);
+    expect(find.byKey(Keys.maxResult), findsOneWidget);
+
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Тапаем по виджету завершения и проверяем, что игра началась заново
+    await tester.tap(complete);
+    await tester.pumpTimes(50);
+
+    expect(complete, findsNothing);
+    expect(find.byType(CapitalCard), findsWidgets);
+    expect(find.byType(Headers), findsOneWidget);
+    expect(find.byType(Controls), findsOneWidget);
+    expect(find.widgetWithIcon(IconButton, Icons.nightlight_round),
+        findsOneWidget);
 
     await Future.delayed(const Duration(seconds: 3));
   });
