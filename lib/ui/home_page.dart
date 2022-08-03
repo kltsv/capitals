@@ -134,8 +134,11 @@ class _Cards extends StatelessWidget {
             ),
           ),
           controller: cardsController,
-          cards:
-              items.map((e) => CapitalCard(key: ValueKey(e), item: e)).toList(),
+          cards: items
+              .map(
+                (item) => CapitalCard(key: ValueKey(item.capital), item: item),
+              )
+              .toList(),
           onForward: (index, info) {
             context.read<GameLogic>().add(OnGuessEvent(
                   index,
