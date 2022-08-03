@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
+import 'package:capitals/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -40,13 +41,11 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<ColorPair>(
-        builder: (context, colors, child) {
-          return GradientBackground(
-            startColor: colors.main.withOpacity(0.3),
-            endColor: colors.second.withOpacity(0.3),
-            child: child,
-          );
-        },
+        builder: (context, colors, child) => GradientBackground(
+          startColor: colors.main.withOpacity(0.3),
+          endColor: colors.second.withOpacity(0.3),
+          child: child,
+        ),
         child: SafeArea(
           bottom: false,
           child: Selector<ItemsState, bool>(
@@ -136,8 +135,11 @@ class _Cards extends StatelessWidget {
             ),
           ),
           controller: cardsController,
-          cards:
-              items.map((e) => CapitalCard(key: ValueKey(e), item: e)).toList(),
+          cards: items
+              .map(
+                (item) => CapitalCard(key: ValueKey(item.capital), item: item),
+              )
+              .toList(),
           onForward: (index, info) {
             context.read<GameLogic>().add(OnGuessEvent(
                   index,
@@ -207,6 +209,7 @@ class _ScoreProgress extends StatelessWidget {
           _ColoredProgressModel(gameState.progress, colorPair.main),
       builder: (context, model, _) {
         return ProgressWave(
+          key: Keys.scoreProgressWave,
           color: model.color.withOpacity(0.6),
           progress: model.progress,
           duration: const Duration(seconds: 15),
@@ -226,6 +229,7 @@ class _ItemsProgress extends StatelessWidget {
           _ColoredProgressModel(itemsState.progress, colorPair.second),
       builder: (context, model, _) {
         return ProgressWave(
+          key: Keys.itemsProgressWave,
           color: model.color.withOpacity(0.6),
           progress: model.progress,
           duration: const Duration(seconds: 15),

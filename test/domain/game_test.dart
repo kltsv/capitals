@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:capitals/data/data.dart';
 import 'package:capitals/domain/game.dart';
@@ -9,12 +8,10 @@ import 'package:capitals/domain/palette.dart';
 import 'package:capitals/domain/states/game_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import '../test_data/countries.dart';
-@GenerateMocks([Random, Api])
-import 'game_test.mocks.dart';
+import 'test_domain.mocks.dart';
 
 void main() {
   late MockRandom random;

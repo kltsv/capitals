@@ -3,6 +3,7 @@ import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
 import '../../domain/models/game_item.dart';
+import '../../keys.dart';
 
 class Headers extends StatelessWidget {
   final String? title;
@@ -246,10 +247,12 @@ class CompleteWidget extends StatelessWidget {
           ),
           Text(
             score.toString(),
+            key: Keys.scoreResult,
             style: Theme.of(context).textTheme.headline1,
           ),
           Text(
             'out of $topScore',
+            key: Keys.maxResult,
             style: Theme.of(context).textTheme.headline5,
           ),
         ],
