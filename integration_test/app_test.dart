@@ -322,6 +322,36 @@ void main() {
 
     await Future.delayed(const Duration(seconds: 3));
   });
+
+  testWidgets('Light/dark mode switching', (tester) async {
+    app.main();
+
+    await tester.pumpTimes(50);
+
+    Element context() => tester.element(find.byType(Scaffold));
+
+    expect(Theme.of(context()).brightness, Brightness.light);
+
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.nightlight_round));
+    await tester.pumpTimes(50);
+    await Future.delayed(const Duration(seconds: 1));
+
+    expect(Theme.of(context()).brightness, Brightness.dark);
+
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.wb_sunny_outlined));
+    await tester.pumpTimes(50);
+    await Future.delayed(const Duration(seconds: 1));
+
+    expect(Theme.of(context()).brightness, Brightness.light);
+
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.nightlight_round));
+    await tester.pumpTimes(50);
+    await Future.delayed(const Duration(seconds: 1));
+
+    expect(Theme.of(context()).brightness, Brightness.dark);
+
+    await Future.delayed(const Duration(seconds: 3));
+  });
 }
 
 extension TesterExt on WidgetTester {
