@@ -94,7 +94,10 @@ void main() {
 
     // Делаем свайп влево
     await tester.timedDrag(
-        firstCard, const Offset(100.0, 0.0), const Duration(seconds: 1));
+      firstCard,
+      Offset(tester.percentsOfScreen(0.5), 0.0),
+      const Duration(seconds: 1),
+    );
     // И итерируемся по кадрам, чтобы виджет улетел
     await tester.pumpTimes(60);
 
@@ -124,7 +127,10 @@ void main() {
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
     await tester.timedDrag(
-        secondCard, const Offset(-100.0, 0.0), const Duration(seconds: 1));
+      secondCard,
+      Offset(-tester.percentsOfScreen(0.5), 0.0),
+      const Duration(seconds: 1),
+    );
     await tester.pumpTimes(60);
 
     final thirdCard = find.byKey(const ValueKey('Tunis'));
@@ -270,7 +276,7 @@ void main() {
         // Делаем свайп влево
         await tester.timedDrag(
           card.last,
-          Offset(guessTrue ? 100.0 : -100, 0.0),
+          Offset((guessTrue ? 1 : -1) * tester.percentsOfScreen(0.5), 0.0),
           const Duration(milliseconds: 200),
         );
         // И итерируемся по кадрам, чтобы виджет улетел
@@ -374,5 +380,12 @@ extension TesterExt on WidgetTester {
     for (var i = 0; i < times; i++) {
       await pump(duration, phase);
     }
+  }
+}
+
+extension SwipeTesterExt on WidgetTester {
+  double percentsOfScreen(double percents, {Axis axis = Axis.horizontal}) {
+    final size = MediaQuery.of(element(find.byType(Scaffold))).size;
+    return (axis == Axis.horizontal ? size.width : size.height) * percents;
   }
 }
