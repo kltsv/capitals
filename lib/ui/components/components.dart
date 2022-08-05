@@ -22,9 +22,12 @@ class Headers extends StatelessWidget {
     return Column(
       children: [
         if (title != null)
-          FadeSizedText(
-            title,
-            style: Theme.of(context).textTheme.headline4,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FadeSizedText(
+              title,
+              style: Theme.of(context).textTheme.headline4,
+            ),
           ),
         if (subtitle != null)
           FadeSizedText(

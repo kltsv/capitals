@@ -1,6 +1,7 @@
 import 'package:capitals/ui/components/theme_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:golden_toolkit/golden_toolkit.dart';
 
 void main() {
   testWidgets(
@@ -46,8 +47,9 @@ void main() {
   testWidgets(
       'When dark mode and toggle button then'
       ' and callback is called', (widgetTester) async {
-    var counter = 0;
+    await loadAppFonts();
 
+    var counter = 0;
     await widgetTester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -81,5 +83,39 @@ void main() {
       findsOneWidget,
     );
     expect(counter, 1);
+  });
+
+  testWidgets('ThemeSwitch light golden', (widgetTester) async {
+    await loadAppFonts();
+
+    await widgetTester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: ThemeSwitch(),
+        ),
+      ),
+    );
+
+    await expectLater(
+      find.byType(ThemeSwitch),
+      matchesGoldenFile('goldens/theme_switch_light.png'),
+    );
+  });
+
+  testWidgets('ThemeSwitch dark golden', (widgetTester) async {
+    await loadAppFonts();
+
+    await widgetTester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: ThemeSwitch(isDark: true),
+        ),
+      ),
+    );
+
+    await expectLater(
+      find.byType(ThemeSwitch),
+      matchesGoldenFile('goldens/theme_switch_dark.png'),
+    );
   });
 }
