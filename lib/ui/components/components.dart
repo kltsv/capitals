@@ -109,6 +109,13 @@ class CapitalCard extends StatelessWidget {
 }
 
 class GradientBackground extends StatelessWidget {
+  /// Если флаг включен, то вместо градиента
+  /// будет использован один цвет.
+  ///
+  /// Включать только для golden-тестов.
+  @visibleForTesting
+  static var simplify = false;
+
   static const _updateDuration = Duration(milliseconds: 600);
 
   final Color startColor;
@@ -129,7 +136,7 @@ class GradientBackground extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.bottomLeft,
             end: Alignment.topRight,
-            colors: [startColor, endColor],
+            colors: [startColor, simplify ? startColor : endColor],
           ),
         ),
         child: child,
@@ -169,6 +176,13 @@ class Wave extends StatelessWidget {
 }
 
 class ProgressWave extends StatelessWidget {
+  /// Если флаг включен, то вместо волн
+  /// будет использован обычный заполняющийся контейнер.
+  ///
+  /// Включать только для golden-тестов.
+  @visibleForTesting
+  static var simplify = false;
+
   static const _updateDuration = Duration(milliseconds: 600);
 
   final double progress;
@@ -188,10 +202,12 @@ class ProgressWave extends StatelessWidget {
       curve: Curves.ease,
       height: MediaQuery.of(context).size.height * progress,
       duration: _updateDuration,
-      child: Wave(
-        color: color,
-        duration: duration,
-      ),
+      child: simplify
+          ? SizedBox.expand(child: ColoredBox(color: color))
+          : Wave(
+              color: color,
+              duration: duration,
+            ),
     );
   }
 }

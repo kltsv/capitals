@@ -3,7 +3,9 @@ import 'dart:math';
 
 import 'package:capitals/domain/assemble.dart';
 import 'package:capitals/keys.dart';
+import 'package:capitals/ui/app.dart';
 import 'package:capitals/ui/components/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -27,7 +29,10 @@ void main() {
   tearDownAll(() async => await loggerSub.cancel());
 
   // Сбрасываем контейнер getIt после каждого теста
-  tearDown(() => getIt.reset());
+  tearDown(() {
+    resetSimpleUI();
+    getIt.reset();
+  });
 
   testWidgets(
       'When app started then items are loaded '
@@ -72,6 +77,8 @@ void main() {
 
   testWidgets('When drag cards then current item is updated', (tester) async {
     test_app.main();
+    _simplifyUI();
+
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
@@ -91,6 +98,11 @@ void main() {
     var itemsProgress = find.byKey(Keys.itemsProgressWave);
     var itemsSize = tester.getSize(itemsProgress);
     expect(itemsProgress, findsOneWidget);
+
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('drag_0')),
+    );
 
     // Делаем свайп влево
     await tester.timedDrag(
@@ -125,6 +137,11 @@ void main() {
     itemsSize = tester.getSize(itemsProgress);
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
+
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('drag_1')),
+    );
 
     await tester.timedDrag(
       secondCard,
@@ -162,6 +179,11 @@ void main() {
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('drag_2')),
+    );
+
     await tester.pumpAndWait(waitSeconds: 3);
   });
 
@@ -172,6 +194,8 @@ void main() {
     // и в другом порядке (сначала false, потом true)
 
     test_app.main();
+    _simplifyUI();
+
     while (assemble.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
@@ -194,6 +218,11 @@ void main() {
     var itemsProgress = find.byKey(Keys.itemsProgressWave);
     var itemsSize = tester.getSize(itemsProgress);
     expect(itemsProgress, findsOneWidget);
+
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('tap_0')),
+    );
 
     await tester.tap(falseButton);
     await tester.pumpTimes(60);
@@ -220,6 +249,11 @@ void main() {
     itemsSize = tester.getSize(itemsProgress);
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
+
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('tap_1')),
+    );
 
     await tester.tap(trueButton);
     await tester.pumpTimes(60);
@@ -248,6 +282,11 @@ void main() {
     testLogger.info('Items size: prev=$prevItemsSize, crt=$itemsSize');
     expect(prevItemsSize.height < itemsSize.height, isTrue);
 
+    await expectLater(
+      find.byType(App),
+      matchesGoldenFile(goldenFileName('tap_2')),
+    );
+
     await tester.pumpAndWait(waitSeconds: 3);
   });
 
@@ -262,10 +301,15 @@ void main() {
     }
     await tester.pumpTimes(60);
 
-    final random = Random();
+    // Убеждаемся, что на старте приложения
+    // в продовом окружении, тестовые флаги изменены
+    expect(ProgressWave.simplify, isFalse);
+    expect(GradientBackground.simplify, isFalse);
 
     expect(find.byType(Headers), findsOneWidget);
     expect(find.byType(Controls), findsOneWidget);
+
+    final random = Random();
 
     for (var i = 0; i < 29; i++) {
       final shouldDrag = random.nextBool();
@@ -321,6 +365,11 @@ void main() {
     expect(find.byType(Controls), findsOneWidget);
     expect(find.widgetWithIcon(IconButton, Icons.nightlight_round),
         findsOneWidget);
+
+    // Убеждаемся, что в результате работы приложения
+    // в продовом окружении, тестовые флаги не переключались
+    expect(ProgressWave.simplify, isFalse);
+    expect(GradientBackground.simplify, isFalse);
 
     await waitSec(3);
   });
@@ -388,4 +437,27 @@ extension SwipeTesterExt on WidgetTester {
     final size = MediaQuery.of(element(find.byType(Scaffold))).size;
     return (axis == Axis.horizontal ? size.width : size.height) * percents;
   }
+}
+
+/// Включить упрощенный UI
+void _simplifyUI() {
+  ProgressWave.simplify = true;
+  GradientBackground.simplify = true;
+}
+
+// Отключить упрощенный UI
+void resetSimpleUI() {
+  ProgressWave.simplify = false;
+  GradientBackground.simplify = false;
+}
+
+String goldenFileName(String name) {
+  const goldensDir = 'goldens/';
+  const expectedExt = '.png';
+  assert(
+    !name.endsWith(expectedExt),
+    'Use name without extension — it will be added automatically by this method',
+  );
+  final platform = defaultTargetPlatform.name.toLowerCase();
+  return '$goldensDir${name}_$platform$expectedExt';
 }
