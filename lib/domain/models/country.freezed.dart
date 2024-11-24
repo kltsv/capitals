@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'country.dart';
 
@@ -12,7 +12,7 @@ part of 'country.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Country _$CountryFromJson(Map<String, dynamic> json) {
   return _Country.fromJson(json);
@@ -44,7 +44,8 @@ mixin _$Country {
 /// @nodoc
 abstract class $CountryCopyWith<$Res> {
   factory $CountryCopyWith(Country value, $Res Function(Country) then) =
-      _$CountryCopyWithImpl<$Res>;
+      _$CountryCopyWithImpl<$Res, Country>;
+  @useResult
   $Res call(
       {@JsonKey(name: 'name') String name,
       @JsonKey(name: 'capital') String capital,
@@ -53,47 +54,51 @@ abstract class $CountryCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$CountryCopyWithImpl<$Res> implements $CountryCopyWith<$Res> {
+class _$CountryCopyWithImpl<$Res, $Val extends Country>
+    implements $CountryCopyWith<$Res> {
   _$CountryCopyWithImpl(this._value, this._then);
 
-  final Country _value;
   // ignore: unused_field
-  final $Res Function(Country) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
-    Object? capital = freezed,
-    Object? imageUrls = freezed,
-    Object? index = freezed,
+    Object? name = null,
+    Object? capital = null,
+    Object? imageUrls = null,
+    Object? index = null,
   }) {
     return _then(_value.copyWith(
-      name: name == freezed
+      name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      capital: capital == freezed
+      capital: null == capital
           ? _value.capital
           : capital // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrls: imageUrls == freezed
+      imageUrls: null == imageUrls
           ? _value.imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      index: index == freezed
+      index: null == index
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
-    ));
+    ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_CountryCopyWith<$Res> implements $CountryCopyWith<$Res> {
-  factory _$$_CountryCopyWith(
-          _$_Country value, $Res Function(_$_Country) then) =
-      __$$_CountryCopyWithImpl<$Res>;
+abstract class _$$CountryImplCopyWith<$Res> implements $CountryCopyWith<$Res> {
+  factory _$$CountryImplCopyWith(
+          _$CountryImpl value, $Res Function(_$CountryImpl) then) =
+      __$$CountryImplCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {@JsonKey(name: 'name') String name,
       @JsonKey(name: 'capital') String capital,
@@ -102,35 +107,35 @@ abstract class _$$_CountryCopyWith<$Res> implements $CountryCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_CountryCopyWithImpl<$Res> extends _$CountryCopyWithImpl<$Res>
-    implements _$$_CountryCopyWith<$Res> {
-  __$$_CountryCopyWithImpl(_$_Country _value, $Res Function(_$_Country) _then)
-      : super(_value, (v) => _then(v as _$_Country));
+class __$$CountryImplCopyWithImpl<$Res>
+    extends _$CountryCopyWithImpl<$Res, _$CountryImpl>
+    implements _$$CountryImplCopyWith<$Res> {
+  __$$CountryImplCopyWithImpl(
+      _$CountryImpl _value, $Res Function(_$CountryImpl) _then)
+      : super(_value, _then);
 
-  @override
-  _$_Country get _value => super._value as _$_Country;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = freezed,
-    Object? capital = freezed,
-    Object? imageUrls = freezed,
-    Object? index = freezed,
+    Object? name = null,
+    Object? capital = null,
+    Object? imageUrls = null,
+    Object? index = null,
   }) {
-    return _then(_$_Country(
-      name == freezed
+    return _then(_$CountryImpl(
+      null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      capital == freezed
+      null == capital
           ? _value.capital
           : capital // ignore: cast_nullable_to_non_nullable
               as String,
-      imageUrls: imageUrls == freezed
+      imageUrls: null == imageUrls
           ? _value._imageUrls
           : imageUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
-      index: index == freezed
+      index: null == index
           ? _value.index
           : index // ignore: cast_nullable_to_non_nullable
               as int,
@@ -140,20 +145,16 @@ class __$$_CountryCopyWithImpl<$Res> extends _$CountryCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Country implements _Country {
-  const _$_Country(
-      @JsonKey(name: 'name')
-          this.name,
-      @JsonKey(name: 'capital')
-          this.capital,
+class _$CountryImpl implements _Country {
+  const _$CountryImpl(
+      @JsonKey(name: 'name') this.name, @JsonKey(name: 'capital') this.capital,
       {@JsonKey(name: 'imageUrls')
-          final List<String> imageUrls = const <String>[],
-      @JsonKey(name: 'index')
-          this.index = 0})
+      final List<String> imageUrls = const <String>[],
+      @JsonKey(name: 'index') this.index = 0})
       : _imageUrls = imageUrls;
 
-  factory _$_Country.fromJson(Map<String, dynamic> json) =>
-      _$$_CountryFromJson(json);
+  factory _$CountryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CountryImplFromJson(json);
 
   /// Название страны
   @override
@@ -172,6 +173,7 @@ class _$_Country implements _Country {
   @override
   @JsonKey(name: 'imageUrls')
   List<String> get imageUrls {
+    if (_imageUrls is EqualUnmodifiableListView) return _imageUrls;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_imageUrls);
   }
@@ -187,34 +189,31 @@ class _$_Country implements _Country {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Country &&
-            const DeepCollectionEquality().equals(other.name, name) &&
-            const DeepCollectionEquality().equals(other.capital, capital) &&
+            other is _$CountryImpl &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.capital, capital) || other.capital == capital) &&
             const DeepCollectionEquality()
                 .equals(other._imageUrls, _imageUrls) &&
-            const DeepCollectionEquality().equals(other.index, index));
+            (identical(other.index, index) || other.index == index));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(name),
-      const DeepCollectionEquality().hash(capital),
-      const DeepCollectionEquality().hash(_imageUrls),
-      const DeepCollectionEquality().hash(index));
+  int get hashCode => Object.hash(runtimeType, name, capital,
+      const DeepCollectionEquality().hash(_imageUrls), index);
 
   @JsonKey(ignore: true)
   @override
-  _$$_CountryCopyWith<_$_Country> get copyWith =>
-      __$$_CountryCopyWithImpl<_$_Country>(this, _$identity);
+  @pragma('vm:prefer-inline')
+  _$$CountryImplCopyWith<_$CountryImpl> get copyWith =>
+      __$$CountryImplCopyWithImpl<_$CountryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CountryToJson(
+    return _$$CountryImplToJson(
       this,
     );
   }
@@ -224,9 +223,9 @@ abstract class _Country implements Country {
   const factory _Country(@JsonKey(name: 'name') final String name,
       @JsonKey(name: 'capital') final String capital,
       {@JsonKey(name: 'imageUrls') final List<String> imageUrls,
-      @JsonKey(name: 'index') final int index}) = _$_Country;
+      @JsonKey(name: 'index') final int index}) = _$CountryImpl;
 
-  factory _Country.fromJson(Map<String, dynamic> json) = _$_Country.fromJson;
+  factory _Country.fromJson(Map<String, dynamic> json) = _$CountryImpl.fromJson;
 
   @override
 
@@ -250,6 +249,6 @@ abstract class _Country implements Country {
   int get index;
   @override
   @JsonKey(ignore: true)
-  _$$_CountryCopyWith<_$_Country> get copyWith =>
+  _$$CountryImplCopyWith<_$CountryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

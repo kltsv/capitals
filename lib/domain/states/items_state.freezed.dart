@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'items_state.dart';
 
@@ -12,7 +12,7 @@ part of 'items_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 ItemsState _$ItemsStateFromJson(Map<String, dynamic> json) {
   return _ItemsState.fromJson(json);
@@ -35,71 +35,75 @@ mixin _$ItemsState {
 abstract class $ItemsStateCopyWith<$Res> {
   factory $ItemsStateCopyWith(
           ItemsState value, $Res Function(ItemsState) then) =
-      _$ItemsStateCopyWithImpl<$Res>;
+      _$ItemsStateCopyWithImpl<$Res, ItemsState>;
+  @useResult
   $Res call(
       {@JsonKey(name: 'currentIndex') int currentIndex,
       @JsonKey(name: 'items') List<GameItem> items});
 }
 
 /// @nodoc
-class _$ItemsStateCopyWithImpl<$Res> implements $ItemsStateCopyWith<$Res> {
+class _$ItemsStateCopyWithImpl<$Res, $Val extends ItemsState>
+    implements $ItemsStateCopyWith<$Res> {
   _$ItemsStateCopyWithImpl(this._value, this._then);
 
-  final ItemsState _value;
   // ignore: unused_field
-  final $Res Function(ItemsState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentIndex = freezed,
-    Object? items = freezed,
+    Object? currentIndex = null,
+    Object? items = null,
   }) {
     return _then(_value.copyWith(
-      currentIndex: currentIndex == freezed
+      currentIndex: null == currentIndex
           ? _value.currentIndex
           : currentIndex // ignore: cast_nullable_to_non_nullable
               as int,
-      items: items == freezed
+      items: null == items
           ? _value.items
           : items // ignore: cast_nullable_to_non_nullable
               as List<GameItem>,
-    ));
+    ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_ItemsStateCopyWith<$Res>
+abstract class _$$ItemsStateImplCopyWith<$Res>
     implements $ItemsStateCopyWith<$Res> {
-  factory _$$_ItemsStateCopyWith(
-          _$_ItemsState value, $Res Function(_$_ItemsState) then) =
-      __$$_ItemsStateCopyWithImpl<$Res>;
+  factory _$$ItemsStateImplCopyWith(
+          _$ItemsStateImpl value, $Res Function(_$ItemsStateImpl) then) =
+      __$$ItemsStateImplCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {@JsonKey(name: 'currentIndex') int currentIndex,
       @JsonKey(name: 'items') List<GameItem> items});
 }
 
 /// @nodoc
-class __$$_ItemsStateCopyWithImpl<$Res> extends _$ItemsStateCopyWithImpl<$Res>
-    implements _$$_ItemsStateCopyWith<$Res> {
-  __$$_ItemsStateCopyWithImpl(
-      _$_ItemsState _value, $Res Function(_$_ItemsState) _then)
-      : super(_value, (v) => _then(v as _$_ItemsState));
+class __$$ItemsStateImplCopyWithImpl<$Res>
+    extends _$ItemsStateCopyWithImpl<$Res, _$ItemsStateImpl>
+    implements _$$ItemsStateImplCopyWith<$Res> {
+  __$$ItemsStateImplCopyWithImpl(
+      _$ItemsStateImpl _value, $Res Function(_$ItemsStateImpl) _then)
+      : super(_value, _then);
 
-  @override
-  _$_ItemsState get _value => super._value as _$_ItemsState;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? currentIndex = freezed,
-    Object? items = freezed,
+    Object? currentIndex = null,
+    Object? items = null,
   }) {
-    return _then(_$_ItemsState(
-      currentIndex == freezed
+    return _then(_$ItemsStateImpl(
+      null == currentIndex
           ? _value.currentIndex
           : currentIndex // ignore: cast_nullable_to_non_nullable
               as int,
-      items == freezed
+      null == items
           ? _value._items
           : items // ignore: cast_nullable_to_non_nullable
               as List<GameItem>,
@@ -109,13 +113,13 @@ class __$$_ItemsStateCopyWithImpl<$Res> extends _$ItemsStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ItemsState implements _ItemsState {
-  const _$_ItemsState(@JsonKey(name: 'currentIndex') this.currentIndex,
+class _$ItemsStateImpl implements _ItemsState {
+  const _$ItemsStateImpl(@JsonKey(name: 'currentIndex') this.currentIndex,
       @JsonKey(name: 'items') final List<GameItem> items)
       : _items = items;
 
-  factory _$_ItemsState.fromJson(Map<String, dynamic> json) =>
-      _$$_ItemsStateFromJson(json);
+  factory _$ItemsStateImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ItemsStateImplFromJson(json);
 
   @override
   @JsonKey(name: 'currentIndex')
@@ -124,6 +128,7 @@ class _$_ItemsState implements _ItemsState {
   @override
   @JsonKey(name: 'items')
   List<GameItem> get items {
+    if (_items is EqualUnmodifiableListView) return _items;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_items);
   }
@@ -134,30 +139,29 @@ class _$_ItemsState implements _ItemsState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ItemsState &&
-            const DeepCollectionEquality()
-                .equals(other.currentIndex, currentIndex) &&
+            other is _$ItemsStateImpl &&
+            (identical(other.currentIndex, currentIndex) ||
+                other.currentIndex == currentIndex) &&
             const DeepCollectionEquality().equals(other._items, _items));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(currentIndex),
-      const DeepCollectionEquality().hash(_items));
+      runtimeType, currentIndex, const DeepCollectionEquality().hash(_items));
 
   @JsonKey(ignore: true)
   @override
-  _$$_ItemsStateCopyWith<_$_ItemsState> get copyWith =>
-      __$$_ItemsStateCopyWithImpl<_$_ItemsState>(this, _$identity);
+  @pragma('vm:prefer-inline')
+  _$$ItemsStateImplCopyWith<_$ItemsStateImpl> get copyWith =>
+      __$$ItemsStateImplCopyWithImpl<_$ItemsStateImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ItemsStateToJson(
+    return _$$ItemsStateImplToJson(
       this,
     );
   }
@@ -166,10 +170,10 @@ class _$_ItemsState implements _ItemsState {
 abstract class _ItemsState implements ItemsState {
   const factory _ItemsState(
       @JsonKey(name: 'currentIndex') final int currentIndex,
-      @JsonKey(name: 'items') final List<GameItem> items) = _$_ItemsState;
+      @JsonKey(name: 'items') final List<GameItem> items) = _$ItemsStateImpl;
 
   factory _ItemsState.fromJson(Map<String, dynamic> json) =
-      _$_ItemsState.fromJson;
+      _$ItemsStateImpl.fromJson;
 
   @override
   @JsonKey(name: 'currentIndex')
@@ -179,6 +183,6 @@ abstract class _ItemsState implements ItemsState {
   List<GameItem> get items;
   @override
   @JsonKey(ignore: true)
-  _$$_ItemsStateCopyWith<_$_ItemsState> get copyWith =>
+  _$$ItemsStateImplCopyWith<_$ItemsStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

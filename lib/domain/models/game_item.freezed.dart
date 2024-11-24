@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'game_item.dart';
 
@@ -12,7 +12,7 @@ part of 'game_item.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 GameItem _$GameItemFromJson(Map<String, dynamic> json) {
   return _GameItem.fromJson(json);
@@ -34,7 +34,8 @@ mixin _$GameItem {
 /// @nodoc
 abstract class $GameItemCopyWith<$Res> {
   factory $GameItemCopyWith(GameItem value, $Res Function(GameItem) then) =
-      _$GameItemCopyWithImpl<$Res>;
+      _$GameItemCopyWithImpl<$Res, GameItem>;
+  @useResult
   $Res call(
       {@JsonKey(name: 'original') Country original,
       @JsonKey(name: 'fake') Country? fake});
@@ -44,55 +45,62 @@ abstract class $GameItemCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$GameItemCopyWithImpl<$Res> implements $GameItemCopyWith<$Res> {
+class _$GameItemCopyWithImpl<$Res, $Val extends GameItem>
+    implements $GameItemCopyWith<$Res> {
   _$GameItemCopyWithImpl(this._value, this._then);
 
-  final GameItem _value;
   // ignore: unused_field
-  final $Res Function(GameItem) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? original = freezed,
+    Object? original = null,
     Object? fake = freezed,
   }) {
     return _then(_value.copyWith(
-      original: original == freezed
+      original: null == original
           ? _value.original
           : original // ignore: cast_nullable_to_non_nullable
               as Country,
-      fake: fake == freezed
+      fake: freezed == fake
           ? _value.fake
           : fake // ignore: cast_nullable_to_non_nullable
               as Country?,
-    ));
+    ) as $Val);
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $CountryCopyWith<$Res> get original {
     return $CountryCopyWith<$Res>(_value.original, (value) {
-      return _then(_value.copyWith(original: value));
+      return _then(_value.copyWith(original: value) as $Val);
     });
   }
 
   @override
+  @pragma('vm:prefer-inline')
   $CountryCopyWith<$Res>? get fake {
     if (_value.fake == null) {
       return null;
     }
 
     return $CountryCopyWith<$Res>(_value.fake!, (value) {
-      return _then(_value.copyWith(fake: value));
+      return _then(_value.copyWith(fake: value) as $Val);
     });
   }
 }
 
 /// @nodoc
-abstract class _$$_GameItemCopyWith<$Res> implements $GameItemCopyWith<$Res> {
-  factory _$$_GameItemCopyWith(
-          _$_GameItem value, $Res Function(_$_GameItem) then) =
-      __$$_GameItemCopyWithImpl<$Res>;
+abstract class _$$GameItemImplCopyWith<$Res>
+    implements $GameItemCopyWith<$Res> {
+  factory _$$GameItemImplCopyWith(
+          _$GameItemImpl value, $Res Function(_$GameItemImpl) then) =
+      __$$GameItemImplCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {@JsonKey(name: 'original') Country original,
       @JsonKey(name: 'fake') Country? fake});
@@ -104,26 +112,25 @@ abstract class _$$_GameItemCopyWith<$Res> implements $GameItemCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_GameItemCopyWithImpl<$Res> extends _$GameItemCopyWithImpl<$Res>
-    implements _$$_GameItemCopyWith<$Res> {
-  __$$_GameItemCopyWithImpl(
-      _$_GameItem _value, $Res Function(_$_GameItem) _then)
-      : super(_value, (v) => _then(v as _$_GameItem));
+class __$$GameItemImplCopyWithImpl<$Res>
+    extends _$GameItemCopyWithImpl<$Res, _$GameItemImpl>
+    implements _$$GameItemImplCopyWith<$Res> {
+  __$$GameItemImplCopyWithImpl(
+      _$GameItemImpl _value, $Res Function(_$GameItemImpl) _then)
+      : super(_value, _then);
 
-  @override
-  _$_GameItem get _value => super._value as _$_GameItem;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? original = freezed,
+    Object? original = null,
     Object? fake = freezed,
   }) {
-    return _then(_$_GameItem(
-      original == freezed
+    return _then(_$GameItemImpl(
+      null == original
           ? _value.original
           : original // ignore: cast_nullable_to_non_nullable
               as Country,
-      fake: fake == freezed
+      fake: freezed == fake
           ? _value.fake
           : fake // ignore: cast_nullable_to_non_nullable
               as Country?,
@@ -133,12 +140,12 @@ class __$$_GameItemCopyWithImpl<$Res> extends _$GameItemCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_GameItem implements _GameItem {
-  const _$_GameItem(@JsonKey(name: 'original') this.original,
+class _$GameItemImpl implements _GameItem {
+  const _$GameItemImpl(@JsonKey(name: 'original') this.original,
       {@JsonKey(name: 'fake') this.fake});
 
-  factory _$_GameItem.fromJson(Map<String, dynamic> json) =>
-      _$$_GameItemFromJson(json);
+  factory _$GameItemImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GameItemImplFromJson(json);
 
   @override
   @JsonKey(name: 'original')
@@ -153,29 +160,28 @@ class _$_GameItem implements _GameItem {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_GameItem &&
-            const DeepCollectionEquality().equals(other.original, original) &&
-            const DeepCollectionEquality().equals(other.fake, fake));
+            other is _$GameItemImpl &&
+            (identical(other.original, original) ||
+                other.original == original) &&
+            (identical(other.fake, fake) || other.fake == fake));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(original),
-      const DeepCollectionEquality().hash(fake));
+  int get hashCode => Object.hash(runtimeType, original, fake);
 
   @JsonKey(ignore: true)
   @override
-  _$$_GameItemCopyWith<_$_GameItem> get copyWith =>
-      __$$_GameItemCopyWithImpl<_$_GameItem>(this, _$identity);
+  @pragma('vm:prefer-inline')
+  _$$GameItemImplCopyWith<_$GameItemImpl> get copyWith =>
+      __$$GameItemImplCopyWithImpl<_$GameItemImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GameItemToJson(
+    return _$$GameItemImplToJson(
       this,
     );
   }
@@ -183,9 +189,10 @@ class _$_GameItem implements _GameItem {
 
 abstract class _GameItem implements GameItem {
   const factory _GameItem(@JsonKey(name: 'original') final Country original,
-      {@JsonKey(name: 'fake') final Country? fake}) = _$_GameItem;
+      {@JsonKey(name: 'fake') final Country? fake}) = _$GameItemImpl;
 
-  factory _GameItem.fromJson(Map<String, dynamic> json) = _$_GameItem.fromJson;
+  factory _GameItem.fromJson(Map<String, dynamic> json) =
+      _$GameItemImpl.fromJson;
 
   @override
   @JsonKey(name: 'original')
@@ -195,6 +202,6 @@ abstract class _GameItem implements GameItem {
   Country? get fake;
   @override
   @JsonKey(ignore: true)
-  _$$_GameItemCopyWith<_$_GameItem> get copyWith =>
+  _$$GameItemImplCopyWith<_$GameItemImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

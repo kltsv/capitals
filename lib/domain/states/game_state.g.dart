@@ -6,15 +6,16 @@ part of 'game_state.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_GameState _$$_GameStateFromJson(Map<String, dynamic> json) => _$_GameState(
+_$GameStateImpl _$$GameStateImplFromJson(Map<String, dynamic> json) =>
+    _$GameStateImpl(
       (json['countries'] as List<dynamic>)
           .map((e) => Country.fromJson(e as Map<String, dynamic>))
           .toList(),
-      json['score'] as int,
-      json['topScore'] as int,
+      (json['score'] as num).toInt(),
+      (json['topScore'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$_GameStateToJson(_$_GameState instance) =>
+Map<String, dynamic> _$$GameStateImplToJson(_$GameStateImpl instance) =>
     <String, dynamic>{
       'countries': instance.countries,
       'score': instance.score,
