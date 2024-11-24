@@ -2,7 +2,7 @@
 
 Приложение для нескольких лекций Школы Мобильной Разработки Яндекса 2021 и 2022 годов.
 
-[Demo](https://kltsv.github.io/capitals/capitals/)
+[Demo](https://kltsv.github.io/capitals/)
 
 ![Light mode](docs/light.png) ![Dark mode](docs/dark.png) ![Game completed](docs/done.png)
 
