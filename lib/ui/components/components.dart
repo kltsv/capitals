@@ -26,13 +26,13 @@ class Headers extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: FadeSizedText(
               title,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ),
         if (subtitle != null)
           FadeSizedText(
             subtitle,
-            style: Theme.of(context).textTheme.bodyText2,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
       ],
     );
@@ -53,14 +53,14 @@ class Controls extends StatelessWidget {
           onTap: () => onAnswer?.call(false),
           child: Text(
             'False',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
         InkResponse(
           onTap: () => onAnswer?.call(true),
           child: Text(
             'True',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
       ],
@@ -262,17 +262,17 @@ class CompleteWidget extends StatelessWidget {
         children: [
           Text(
             'Your result',
-            style: Theme.of(context).textTheme.headline4,
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           Text(
             score.toString(),
             key: Keys.scoreResult,
-            style: Theme.of(context).textTheme.headline1,
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
           Text(
             'out of $topScore',
             key: Keys.maxResult,
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ],
       ),
