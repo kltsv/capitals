@@ -31,6 +31,7 @@
 .pub/
 /build/
 
+
 # Web related
 
 # Symbolication related
@@ -43,6 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/.cxx
 
 # don't check in golden failure output
 **/failures/*.png
