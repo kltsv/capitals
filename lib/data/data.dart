@@ -10,12 +10,21 @@ class Api {
   const Api();
 
   Future<List<Country>> fetchCountries() async {
-    final rawResponse =
-        await http.get(Uri.parse('https://restcountries.com/v2/all'));
+    final rawResponse = await http
+        .get(
+          Uri.parse('https://restcountries.com/v3.1/all?fields=name,capital'),
+        )
+        .timeout(const Duration(seconds: 10));
+
     final response = jsonDecode(rawResponse.body);
     final capitals = (response as List<dynamic>)
-        .where((e) => e['name'] != null && e['capital'] != null)
-        .map((e) => Country(e['name'], e['capital']))
+        .where((e) =>
+            e['name'] != null &&
+            e['name']['common'] != null &&
+            e['capital'] != null &&
+            (e['capital'] as List).isNotEmpty)
+        .map((e) => Country(
+            e['name']['common'], (e['capital'] as List).first.toString()))
         .toList();
     return capitals;
   }
