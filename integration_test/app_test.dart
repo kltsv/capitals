@@ -28,10 +28,10 @@ void main() {
 
   tearDownAll(() async => await loggerSub.cancel());
 
-  // Сбрасываем контейнер getIt после каждого теста
+  // Сбрасываем контейнер yx_scope после каждого теста
   tearDown(() {
     resetSimpleUI();
-    getIt.reset();
+    appScopeHolder.drop();
   });
 
   testWidgets(
@@ -41,7 +41,7 @@ void main() {
 
     // Итерируемся по фреймам до тех пор,
     // пока в состоянии не появятся айтемы
-    while (assemble.itemsLogic.state.items.isEmpty) {
+    while (appScopeHolder.scope!.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
     await tester.pumpTimes(60);
@@ -79,7 +79,7 @@ void main() {
     test_app.main();
     _simplifyUI();
 
-    while (assemble.itemsLogic.state.items.isEmpty) {
+    while (appScopeHolder.scope!.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
     await tester.pumpTimes(60);
@@ -196,7 +196,7 @@ void main() {
     test_app.main();
     _simplifyUI();
 
-    while (assemble.itemsLogic.state.items.isEmpty) {
+    while (appScopeHolder.scope!.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
     await tester.pumpTimes(60);
@@ -296,7 +296,7 @@ void main() {
 
     // Запускаем полностью продовое окружение
     app.main();
-    while (assemble.itemsLogic.state.items.isEmpty) {
+    while (appScopeHolder.scope!.itemsLogic.state.items.isEmpty) {
       await tester.pump();
     }
     await tester.pumpTimes(60);
@@ -337,7 +337,7 @@ void main() {
           findsOneWidget);
 
       testLogger.fine(
-          '${assemble.itemsLogic.state.currentIndex}: ${assemble.itemsLogic.state.items.map((e) => e.original.capital)}');
+          '${appScopeHolder.scope!.itemsLogic.state.currentIndex}: ${appScopeHolder.scope!.itemsLogic.state.items.map((e) => e.original.capital)}');
     }
 
     // Угадываем последнюю карточку
